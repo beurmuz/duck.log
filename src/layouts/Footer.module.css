@@ -1,0 +1,8 @@
+.wrap-footer {
+  font-family: Pretendard;
+  height: 2rem;
+  padding: 2rem 1rem;
+  .item-footer {
+    text-align: center;
+  }
+}
