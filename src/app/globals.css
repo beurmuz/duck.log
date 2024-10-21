@@ -200,3 +200,9 @@ table {
   border-collapse: collapse;
   border-spacing: 0;
 }
+
+.wrap-pages {
+  max-width: 1100px;
+  margin: 0px auto;
+  padding: 2rem;
+}

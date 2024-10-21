@@ -1,16 +1,12 @@
 import classNames from "classnames/bind";
-import styles from "./page.module.css";
-import Footer from "@/layouts/Footer";
-import Header from "@/layouts/Header";
 // import styles from "./page.module.css";
 
-const cx = classNames.bind(styles);
+// const cx = classNames.bind(styles);
 
-export default function Home() {
+export default function HomePage() {
   return (
-    <div className={cx("wrap-div")}>
-      <Header />
-      <Footer />
+    <div>
+      <h3>블로그는 현재 공사중입니다.</h3>
     </div>
   );
 }
