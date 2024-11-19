@@ -6,7 +6,6 @@ import Footer from "@/layouts/Footer";
 export const metadata: Metadata = {
   title: "duck.log",
   description: "duck의 블로그",
-  icons: "/favicon.ico",
 };
 
 export default function RootLayout({
@@ -16,7 +15,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <link rel="icon" href="/favicon.ico" sizes="any" />
+      <link rel="icon" href="/icon.ico" sizes="any" />
       <body className="wrap-pages">
         <Header />
         {children}

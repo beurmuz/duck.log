@@ -2,8 +2,18 @@
   font-family: Pretendard;
   height: 2rem;
   padding: 2rem 1rem;
-  .item-footer {
-    text-align: center;
+  text-align: center;
+
+  /* .item-github {
+    font-size: 0.8rem;
+    margin-bottom: 1rem;
+
+    .icon-github {
+      width: 1.2rem;
+    }
+  } */
+
+  .item-copyright {
     font-size: 0.8rem;
   }
 }

@@ -1,4 +1,4 @@
-export default function PortfolioPage(props) {
+export default function PortfolioPage({ ...props }: any) {
   return (
     <div>
       <p>포트폴리오 페이지는 작성 중입니다.</p>

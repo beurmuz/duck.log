@@ -1,3 +1,4 @@
+import Navigation from "@/components/Navigation";
 import classNames from "classnames/bind";
 // import styles from "./page.module.css";
 
