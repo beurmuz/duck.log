@@ -1,4 +1,5 @@
 import Navigation from "@/components/Navigation";
+import PostItem from "@/components/PostItem";
 import classNames from "classnames/bind";
 // import styles from "./page.module.css";
 
@@ -7,7 +8,11 @@ import classNames from "classnames/bind";
 export default function HomePage() {
   return (
     <div>
-      <h3>블로그는 현재 공사중입니다.</h3>
+      <PostItem
+        postUrl="url..."
+        postTitle="임시 포스트"
+        postDate="2024.11.20"
+      />
     </div>
   );
 }
