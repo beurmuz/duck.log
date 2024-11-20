@@ -1,5 +1,6 @@
 import classNames from "classnames/bind";
 import styles from "./PostItem.module.css";
+import { ReactNode } from "react";
 
 const cx = classNames.bind(styles);
 
@@ -11,7 +12,7 @@ export default function PostItem({
   postUrl: string;
   postTitle: string;
   postDate: string;
-}) {
+}): ReactNode {
   return (
     <article className={cx("container")}>
       <div className={cx("wrap-image")}>{postUrl}</div>

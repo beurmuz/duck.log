@@ -1,39 +1,41 @@
 .wrap-nav {
   font-family: Pretendard;
-  border-bottom: 1px solid gray;
+  width: 100%;
+  border-bottom: 1px solid rgb(225, 225, 225);
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
   margin-bottom: 2rem;
 
   .wrap-list {
     display: flex;
-    /* padding-bottom: 1rem; */
+    justify-content: space-between;
+    width: 100%;
 
     .list-item {
-      font-size: 1.2rem;
-      font-weight: 500;
-      /* padding-right: 15px; */
+      display: flex;
       padding: 0.25rem 0.5rem;
       margin: auto 0;
-      /* width: 30px; */
-      /* height: 30px; */
     }
 
-    .list-icon {
-      padding: 0.25rem 0.5rem;
-      margin: auto 0;
+    .site-name {
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
 
-      .icon-github,
-      .icon-rss {
-        width: 2rem;
-      }
+    .icon-profile {
+      width: 1.5rem;
+      /* margin-right: 0.5rem; */
+      margin: 0 0.25rem;
+    }
+
+    .icon-user {
+      width: 1.5rem;
+      padding: 0.05rem;
     }
   }
 }
 
-.active {
-  background-color: rgb(255, 238, 131);
-  border-radius: 1rem;
-  font-weight: 700;
-}
+/* .active {
+  background-color: rgb(232, 232, 232);
+  border-radius: 5rem;
+} */
