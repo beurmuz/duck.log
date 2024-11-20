@@ -14,7 +14,7 @@ export default function PostItem({
   postDate: string;
 }): ReactNode {
   return (
-    <article className={cx("container")}>
+    <article className={cx("wrap-postitem")}>
       <div className={cx("wrap-image")}>{postUrl}</div>
       <h2 className={cx("post-title")}>{postTitle}</h2>
       <p className={cx("post-date")}>{postDate}</p>

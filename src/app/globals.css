@@ -70,6 +70,15 @@ a {
   text-decoration: none;
 }
 
+button {
+  border: 0;
+  background-color: transparent;
+}
+
+button:hover {
+  cursor: pointer;
+}
+
 /* @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;
