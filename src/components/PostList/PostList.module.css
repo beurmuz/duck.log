@@ -1,39 +1,22 @@
 .wrap-container {
+  font-family: Pretendard;
   font-size: 1.2rem;
-
-  .wrap-list-header {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    padding: 1rem 0;
-
-    .list-name {
-      font-weight: 700;
-    }
-  }
-
-  .category-button {
-    width: 1.3rem;
-  }
-
-  .category-icon {
-    width: 100%;
-  }
 
   .postlist {
     display: grid;
-    gap: 1rem;
   }
 }
 
 @media (min-width: 961px) {
   .postlist {
     grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
   }
 }
 
 @media (max-width: 960px) {
   .postlist {
     grid-template-columns: 1fr;
+    gap: 0.5rem;
   }
 }

@@ -1,16 +1,10 @@
-// import classNames from "classnames/bind";
-// import styles from "./page.module.css";
-
-import Link from "next/link";
-
-// const cx = classNames.bind(styles);
+// import Link from "next/link";
 
 export default function AboutPage() {
   return (
     <div>
-      About 페이지는 업데이트 중입니다.
-      <br />
-      <br />
+      공사중 🚧
+      {/* 
       <ol>
         <li>
           <Link href="/portfolio/blog">Blog</Link>
@@ -21,7 +15,7 @@ export default function AboutPage() {
         <li>
           <Link href="/portfolio/colrapy">Colrapy</Link>
         </li>
-      </ol>
+      </ol> */}
     </div>
   );
 }

@@ -1,0 +1,19 @@
+.wrap-header {
+  font-family: Pretendard;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding-top: 1rem;
+
+  .section-name {
+    font-weight: 600;
+  }
+
+  .category-button {
+    width: 1.3rem;
+  }
+
+  .category-icon {
+    width: 100%;
+  }
+}

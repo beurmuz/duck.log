@@ -1,23 +1,49 @@
 .wrap-postitem {
-  border: 1px gray solid;
-  padding: 1rem;
+  /* border: 1px gray solid; */
+  padding: 1rem 0;
   border-radius: 1rem;
   width: 100%;
-  height: 15rem;
 }
 
 .wrap-image {
-  height: 80%;
+  width: 100%;
+  height: 13rem;
   border: 1px solid lightgray;
   border-radius: 0.5rem;
+  background-color: lightgray;
 }
 
 .post-title {
   font-size: 1.3rem;
   font-weight: 700;
-  padding: 0.5rem 0;
+  padding: 1rem 0;
+  line-height: 1.5rem;
+
+  /* 띄어쓰기와 상관없이 자동으로 다음 줄로 넘어가도록 하기 */
+  word-break: break-all;
+}
+
+.wrap-post-info {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  /* margin: auto; */
+
+  .wrap-categories {
+    display: flex;
+    flex-direction: row;
+  }
 }
 
 .post-date {
   font-size: 0.9rem;
+  padding: 0.2rem;
+}
+
+.post-category {
+  font-size: 0.9rem;
+  border: 2px solid lightgray;
+  border-radius: 0.5rem;
+  padding: 0.2rem;
+  margin-right: 0.5rem;
 }
