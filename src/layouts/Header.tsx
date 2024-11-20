@@ -20,7 +20,7 @@ const Header = () => {
               : cx(["site-name", "list-item"])
           }
         >
-          <img src="/profile.png" className={cx("icon-profile")} />
+          {/* <img src="/profile.png" className={cx("icon-profile")} /> */}
 
           <Link href="/">duck.log</Link>
         </li>
@@ -30,7 +30,8 @@ const Header = () => {
           }
         >
           <Link href="/about">
-            <img src="/user-icon.png" className={cx("icon-user")} />
+            <img src="/profile.png" className={cx("icon-profile")} />
+            {/* <img src="/user-icon.png" className={cx("icon-user")} /> */}
           </Link>
         </li>
       </ol>
