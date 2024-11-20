@@ -4,6 +4,7 @@ import classNames from "classnames/bind";
 import styles from "./Header.module.css";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import Image from "next/image";
 
 const cx = classNames.bind(styles);
 
@@ -30,7 +31,11 @@ const Header = () => {
           }
         >
           <Link href="/about">
-            <img src="/profile.png" className={cx("icon-profile")} />
+            <Image
+              src="/profile.png"
+              className={cx("icon-profile")}
+              alt="프로필 사진"
+            />
             {/* <img src="/user-icon.png" className={cx("icon-user")} /> */}
           </Link>
         </li>
