@@ -16,7 +16,7 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <link rel="icon" href="/icon.ico" sizes="any" />
-      <body className="wrap-pages">
+      <body className="wrap-pages vsc-initialized">
         <Header />
         {children}
         <Footer />

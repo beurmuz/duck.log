@@ -13,33 +13,48 @@ const Header = () => {
 
   return (
     <nav className={cx("wrap-nav")}>
-      <ol className={cx("wrap-list")}>
-        <li
-          className={
-            path === "/"
-              ? cx(["site-name", "list-item", "active"])
-              : cx(["site-name", "list-item"])
-          }
-        >
-          {/* <img src="/profile.png" className={cx("icon-profile")} /> */}
-
-          <Link href="/">duck.log</Link>
-        </li>
-        <li
-          className={
-            path === "/about" ? cx(["list-item", "active"]) : cx("list-item")
-          }
-        >
-          <Link href="/about">
-            <Image
-              src="/profile.png"
-              className={cx("icon-profile")}
-              alt="프로필 사진"
-            />
-            {/* <img src="/user-icon.png" className={cx("icon-user")} /> */}
-          </Link>
-        </li>
-      </ol>
+      <Image
+        src="/profile.png"
+        className={cx("icon-profile")}
+        alt="프로필 사진"
+        width={100}
+        height={100}
+      />
+      <div className={cx("wrap-Info")}>
+        <h1 className={cx(["info", "name"])}>Seoryeong</h1>
+        <h2 className={cx(["info", "job"])}>Frontend Engineer</h2>
+        <ol className={cx(["info", "wrap-list"])}>
+          <li
+            className={
+              path === "/blog"
+                ? cx(["site-name", "list-item", "active"])
+                : cx(["site-name", "list-item"])
+            }
+          >
+            <Link href="/">posts</Link>
+          </li>
+          <span className={cx("line")}>|</span>
+          <li
+            className={
+              path === "/about"
+                ? cx(["site-name", "list-item", "active"])
+                : cx(["site-name", "list-item"])
+            }
+          >
+            <Link href="/about">about</Link>
+          </li>
+          <span className={cx("line")}>|</span>
+          <li
+            className={
+              path === "/resume"
+                ? cx(["site-name", "list-item", "active"])
+                : cx(["site-name", "list-item"])
+            }
+          >
+            <Link href="/resume">resume</Link>
+          </li>
+        </ol>
+      </div>
     </nav>
   );
 };

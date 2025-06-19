@@ -1,8 +1,20 @@
 .wrap-postitem {
   /* border: 1px gray solid; */
-  padding: 1rem 0;
-  border-radius: 1rem;
+  background-color: rgb(242, 242, 242);
+  padding: 1.3rem 0.8rem;
+  border-radius: 0.5rem;
   width: 100%;
+  margin-bottom: 20px;
+
+  transition: transform 0.3s ease-in-out, background-color 0.3s ease;
+  /* 브라우저에게 해당 속성이 바뀔 거라고 알려주어 GPU 레이어로 미리 올리는 최적화 기법 */
+  will-change: transform;
+}
+
+.wrap-postitem:hover {
+  transform: scale(1.01);
+  background-color: rgb(251, 231, 77);
+  cursor: pointer;
 }
 
 .wrap-image {
@@ -14,9 +26,9 @@
 }
 
 .post-title {
-  font-size: 1.3rem;
-  font-weight: 700;
-  padding: 1rem 0;
+  font-size: 1.1rem;
+  font-weight: 400;
+  padding-bottom: 0.7rem;
   line-height: 1.5rem;
 
   /* 띄어쓰기와 상관없이 자동으로 다음 줄로 넘어가도록 하기 */
@@ -41,9 +53,10 @@
 }
 
 .post-category {
-  font-size: 0.9rem;
-  border: 2px solid lightgray;
-  border-radius: 0.5rem;
-  padding: 0.2rem;
+  font-size: 0.8rem;
+  color: white;
+  background-color: rgb(124, 124, 124);
+  border-radius: 0.2rem;
+  padding: 0.3rem;
   margin-right: 0.5rem;
 }

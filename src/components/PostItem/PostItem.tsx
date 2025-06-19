@@ -17,17 +17,16 @@ export default function PostItem({
 }): ReactNode {
   return (
     <article className={cx("wrap-postitem")}>
-      <div className={cx("wrap-image")}></div>
       <h2 className={cx("post-title")}>{postTitle}</h2>
       <div className={cx("wrap-post-info")}>
-        <span className={cx("post-date")}>{postDate}</span>
         <ul className={cx("wrap-categories")}>
-          {postCategories.map((category) => (
-            <li className={cx("post-category")} key={postUrl + postDate}>
-              # {category}
+          {postCategories.map((category, id) => (
+            <li className={cx("post-category")} key={postUrl + postDate + id}>
+              {category}
             </li>
           ))}
         </ul>
+        <span className={cx("post-date")}>{postDate}</span>
       </div>
     </article>
   );

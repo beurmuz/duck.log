@@ -9,11 +9,7 @@
     font-weight: 600;
   }
 
-  .category-button {
-    width: 1.3rem;
-  }
-
-  .category-icon {
-    width: 100%;
+  .tags-button {
+    font-size: 1.1rem;
   }
 }

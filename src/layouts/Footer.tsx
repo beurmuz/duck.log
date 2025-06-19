@@ -4,7 +4,7 @@ import styles from "./Footer.module.css";
 const cx = classNames.bind(styles);
 
 const Footer = () => {
-  const startYear: number = 2024;
+  const startYear: number = 2025;
   const nowYear: number = new Date().getFullYear();
 
   return (
@@ -16,8 +16,9 @@ const Footer = () => {
       </p> */}
       <p className={cx("item-copyright")}>
         © {startYear === nowYear ? `${nowYear} ` : `${startYear}-${nowYear} `}
-        beurmuz. all rights reserved.
+        SeoRyeong. all rights reserved.
       </p>
+      {/* <p className={cx("item-email")}>contact. fallinta2@gmail.com</p> */}
     </footer>
   );
 };
