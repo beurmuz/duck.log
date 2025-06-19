@@ -1,14 +1,12 @@
 import PostItem from "../PostItem/PostItem";
 import classNames from "classnames/bind";
 import styles from "./PostList.module.css";
-import SectionHeader from "../UI/SectionHeader";
 
 const cx = classNames.bind(styles);
 
 const PostList = () => {
   return (
     <div className={cx("wrap-container")}>
-      {/* <SectionHeader sectionName="All Posts" /> */}
       <section className={cx("postlist")}>
         <PostItem
           postUrl="url"
