@@ -26,12 +26,12 @@ const Header = () => {
         <ol className={cx(["info", "wrap-list"])}>
           <li
             className={
-              path === "/blog"
+              path === "/archive"
                 ? cx(["site-name", "list-item", "active"])
                 : cx(["site-name", "list-item"])
             }
           >
-            <Link href="/">posts</Link>
+            <Link href="/">archive</Link>
           </li>
           <span className={cx("line")}>|</span>
           <li
