@@ -8,8 +8,17 @@ import Image from "next/image";
 
 const cx = classNames.bind(styles);
 
+const navItems = [
+  { href: "/archive", label: "archive", matchPaths: ["/", "/archive"] },
+  { href: "/about", label: "about", matchPaths: ["/about"] },
+  { href: "/resume", label: "resume", matchPaths: ["/resume"] },
+];
+
 const Header = () => {
-  const path = usePathname();
+  const pathname = usePathname();
+
+  // /와 /archive 모두 archive로 간주
+  const isArchiveActive = pathname === "/" || pathname === "/archive";
 
   return (
     <nav className={cx("wrap-nav")}>
@@ -17,42 +26,28 @@ const Header = () => {
         src="/profile.png"
         className={cx("icon-profile")}
         alt="프로필 사진"
-        width={100}
-        height={100}
+        width={80}
+        height={80}
+        priority
       />
       <div className={cx("wrap-Info")}>
         <h1 className={cx(["info", "name"])}>Seoryeong</h1>
         <h2 className={cx(["info", "job"])}>Frontend Engineer</h2>
         <ol className={cx(["info", "wrap-list"])}>
-          <li
-            className={
-              path === "/archive"
-                ? cx(["site-name", "list-item", "active"])
-                : cx(["site-name", "list-item"])
-            }
-          >
-            <Link href="/">archive</Link>
-          </li>
-          <span className={cx("line")}>|</span>
-          <li
-            className={
-              path === "/about"
-                ? cx(["site-name", "list-item", "active"])
-                : cx(["site-name", "list-item"])
-            }
-          >
-            <Link href="/about">about</Link>
-          </li>
-          <span className={cx("line")}>|</span>
-          <li
-            className={
-              path === "/resume"
-                ? cx(["site-name", "list-item", "active"])
-                : cx(["site-name", "list-item"])
-            }
-          >
-            <Link href="/resume">resume</Link>
-          </li>
+          {navItems.map((item, index) => {
+            const isActive = item.matchPaths.includes(pathname);
+            return (
+              <li key={item.href}>
+                {index > 0 && <span className={cx("line")}>|</span>}
+                <Link
+                  href={item.href}
+                  className={cx("site-name", { active: isActive })}
+                >
+                  {item.label}
+                </Link>
+              </li>
+            );
+          })}
         </ol>
       </div>
     </nav>

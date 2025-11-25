@@ -18,8 +18,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ko">
-      <head>
+    <html lang="ko" suppressHydrationWarning>
+      <body className="wrap-pages vsc-initialized">
         {GA_TRACKING_ID && (
           <>
             <Script
@@ -38,9 +38,6 @@ export default function RootLayout({
             </Script>
           </>
         )}
-      </head>
-      <link rel="icon" href="/icon.ico" sizes="any" />
-      <body className="wrap-pages vsc-initialized">
         <Analytics />
         <Header />
         {children}
