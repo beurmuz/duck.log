@@ -1,55 +1,47 @@
 import PostItem from "../PostItem/PostItem";
 import classNames from "classnames/bind";
 import styles from "./PostList.module.css";
+import { fetchNotionPosts } from "@/lib/notionPosts";
 
 const cx = classNames.bind(styles);
 
-interface Post {
-  postUrl: string;
-  postTitle: string;
-  postDate: string;
-  postCategories: string[];
-}
+const formatDate = (dateStr: string | null): string => {
+  if (!dateStr) return "";
+  const date = new Date(dateStr);
+  if (Number.isNaN(date.getTime())) return "";
+  return date.toLocaleDateString("ko-KR", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
+};
 
-const mockPosts: Post[] = [
-  {
-    postUrl: "url",
-    postTitle: "CSR, SSR 그리고 PR 비교하기",
-    postDate: "2025.06.19",
-    postCategories: ["Web", "JavaScript"],
-  },
-  {
-    postUrl: "url",
-    postTitle:
-      "렌더링을 하는 다양한 방법: CSR과 SSR의 장점만 뽑아 쓰는 점진적 렌더링(Progressive Rendering)",
-    postDate: "2025.06.19",
-    postCategories: ["Web", "Rendering"],
-  },
-  {
-    postUrl: "url",
-    postTitle: "점진적 렌더링(Progressive Rendering)이란 무엇일까?",
-    postDate: "2025.06.19",
-    postCategories: ["Web", "Rendering"],
-  },
-  {
-    postUrl: "url",
-    postTitle: "점진적 렌더링(Progressive Rendering)이란 무엇일까?",
-    postDate: "2025.06.19",
-    postCategories: ["Web", "Rendering"],
-  },
-];
+const PostList = async () => {
+  const posts = await fetchNotionPosts();
 
-const PostList = () => {
+  if (posts.length === 0) {
+    return (
+      <div className={cx("wrap-container")}>
+        <section className={cx("postlist")}>
+          <p className={cx("empty-state")}>
+            아직 발행한 게시글이 없습니다. Notion에서 공개 체크박스를 확인해
+            주세요.
+          </p>
+        </section>
+      </div>
+    );
+  }
+
   return (
     <div className={cx("wrap-container")}>
       <section className={cx("postlist")}>
-        {mockPosts.map((post) => (
+        {posts.map((post) => (
           <PostItem
-            key={post.postUrl}
-            postUrl={post.postUrl}
-            postTitle={post.postTitle}
-            postDate={post.postDate}
-            postCategories={post.postCategories}
+            key={post.id}
+            postUrl={`/archive/${post.id}`}
+            postTitle={post.title || "Untitled"}
+            postDate={formatDate(post.updatedDate ?? post.createdDate)}
+            postCategories={post.categories}
           />
         ))}
       </section>
