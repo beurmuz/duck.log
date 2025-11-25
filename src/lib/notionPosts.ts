@@ -39,8 +39,15 @@ type CreatedTimeProperty = PropertyValue & {
   created_time: string;
 };
 
+type TextProperty = PropertyValue & {
+  type: "rich_text" | "text";
+  rich_text?: Array<{ plain_text: string }>;
+  text?: Array<{ plain_text: string }>;
+};
+
 export interface NotionPostSummary {
   id: string;
+  slug: string | null;
   title: string;
   categories: string[];
   published: boolean;
@@ -110,6 +117,16 @@ function extractCreatedTime(properties: PropertyMap): string | null {
   return created?.created_time ?? null;
 }
 
+function extractTextValue(properties: PropertyMap, key: string): string | null {
+  const prop = properties?.[key] as TextProperty | undefined;
+  const textArray = prop?.rich_text ?? prop?.text;
+  if (!textArray || textArray.length === 0) return null;
+  return textArray
+    .map((t) => t.plain_text)
+    .join(" ")
+    .trim();
+}
+
 export async function fetchNotionPosts(options?: {
   pageSize?: number;
   includeDraft?: boolean;
@@ -133,6 +150,7 @@ export async function fetchNotionPosts(options?: {
 
     return {
       id: page.id,
+      slug: extractTextValue(properties, "slug"),
       title: extractTitle(properties),
       categories: extractCategories(properties),
       published: extractCheckbox(properties),

@@ -38,7 +38,7 @@ const PostList = async () => {
         {posts.map((post) => (
           <PostItem
             key={post.id}
-            postUrl={`/archive/${post.id}`}
+            postUrl={`/archive/${post.slug}`}
             postTitle={post.title || "Untitled"}
             postDate={formatDate(post.updatedDate ?? post.createdDate)}
             postCategories={post.categories}
