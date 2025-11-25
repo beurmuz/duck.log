@@ -22,7 +22,7 @@ const Header = () => {
       <Image
         src="/profile.png"
         className={cx("icon-profile")}
-        alt="프로필 사진"
+        alt="Profile Image"
         width={80}
         height={80}
         priority
