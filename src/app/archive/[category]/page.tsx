@@ -1,13 +1,13 @@
-interface CategoryPageProps {
-  params: {
-    category: string;
-  };
-}
+export default async function CategoryPage({
+  params,
+}: {
+  params: Promise<{ category: string }>;
+}) {
+  const { category } = await params;
 
-export default function CategoryPage({ ...props }: CategoryPageProps) {
   return (
     <section>
-      <div>category: {props.params.category}</div>
+      <div>category: {category}</div>
     </section>
   );
 }

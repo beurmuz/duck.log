@@ -17,9 +17,6 @@ const navItems = [
 const Header = () => {
   const pathname = usePathname();
 
-  // /와 /archive 모두 archive로 간주
-  const isArchiveActive = pathname === "/" || pathname === "/archive";
-
   return (
     <nav className={cx("wrap-nav")}>
       <Image
