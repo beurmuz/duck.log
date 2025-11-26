@@ -1,19 +1,10 @@
 .wrap-footer {
   font-family: Pretendard;
-  height: 2rem;
-  padding: 2rem 1rem;
-  text-align: center;
-
-  /* .item-github {
-    font-size: 0.8rem;
-    margin-bottom: 1rem;
-
-    .icon-github {
-      width: 1.2rem;
-    }
-  } */
+  height: 3rem;
+  padding: 1rem 0;
 
   .item-copyright {
-    font-size: 0.8rem;
+    font-size: 0.9rem;
+    color: rgb(100, 100, 100);
   }
 }

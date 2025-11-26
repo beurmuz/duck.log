@@ -1,53 +1,35 @@
 .wrap-nav {
   font-family: Pretendard;
   width: 100%;
-  border-bottom: 1px solid rgb(208, 208, 208);
+  /* border-bottom: 1px solid rgb(208, 208, 208); */
   display: flex;
   flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
   padding-bottom: 1rem;
-  margin-bottom: 1.5rem;
 
-  .wrap-Info {
-    padding-left: 1rem;
-    margin: auto 0;
-  }
-
-  .info {
-    padding: 0.2rem 0rem;
-  }
-
-  .name {
-    font-size: 1.1rem;
-  }
-  .job {
-    font-size: 1 rem;
+  .site-title {
+    font-size: 1rem;
+    font-weight: 500;
+    margin: 0;
   }
 
   .wrap-list {
     display: flex;
     flex-direction: row;
-    justify-content: center;
     align-items: center;
-    margin-top: 0.5rem;
-    /* width: 100%; */
-
-    .list-item {
-      display: flex;
-      /* margin: auto 0; */
-    }
+    margin: 0;
+    padding: 0;
+    list-style: none;
 
     .line {
-      padding: 0 0.3rem;
-      color: darkgray;
+      padding: 0 0.5rem;
+      color: rgb(100, 100, 100);
     }
 
     .site-name {
       font-size: 1rem;
-      /* font-weight: 500; */
-    }
-
-    .icon-profile {
-      margin: 0 0.25rem;
+      font-weight: 300;
     }
   }
 }
