@@ -137,15 +137,15 @@ export async function fetchNotionPosts(options?: {
     };
   });
 
-  // published 속성이 true인 값만 필터링
-  const filteredPostArray = includeDraft
+  // published 속성이 true인 것만 필터링
+  const filtered = includeDraft
     ? rowPostArray
     : rowPostArray.filter((post) => post.published);
 
-  // updatedDate 기준으로 정렬
-  return filteredPostArray.sort((a, b) => {
-    const dateA = a.updatedDate ?? "";
-    const dateB = b.updatedDate ?? "";
-    return new Date(dateB).getTime() - new Date(dateA).getTime(); // 내림차순
+  // updatedDate 기준으로 정렬 (최신순)
+  return filtered.sort((a, b) => {
+    const dateA = a.updatedDate ?? a.createdDate ?? "";
+    const dateB = b.updatedDate ?? b.createdDate ?? "";
+    return new Date(dateB).getTime() - new Date(dateA).getTime();
   });
 }
