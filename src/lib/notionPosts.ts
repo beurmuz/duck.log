@@ -1,132 +1,109 @@
 import { notion } from "./notion";
 
-// notion data source id
-const DATA_SOURCE_ID =
-  process.env.NOTION_DATA_SOURCE_ID ?? "21e12de2-f4bc-8058-8003-000bffd42b33";
-if (!DATA_SOURCE_ID)
-  throw new Error("⚠️ NOTION_DATA_SOURCE_ID 환경 변수을 확인해주세요.");
+const DATA_SOURCE_ID = process.env.NOTION_DATA_SOURCE_ID;
+if (!DATA_SOURCE_ID) {
+  throw new Error("⚠️ NOTION_DATA_SOURCE_ID 환경 변수를 확인해주세요.");
+}
 
+// Notion 속성들의 기본 형태
 type PropertyValue = {
   type?: string;
-  [key: string]: unknown;
+  [key: string]: unknown; // 인덱스 시그니처 - key는 문자열, 값은 어떤 타입이든 가능
 };
 
-// 각 필드의 type 정의
+// 속성들의 Dictionary (key: string, value: PropertyValue)
 type PropertyMap = Record<string, PropertyValue>;
 
+// title field
 type TitleProperty = PropertyMap & {
   type: "title";
   title: Array<{ plain_text: string }>;
 };
 
+// category field
 type MultiSelectProperty = PropertyMap & {
   type: "multi_select";
   multi_select: Array<{ name: string }>;
 };
 
-type CheckboxProperty = PropertyValue & {
-  type: "checkbox";
-  checkbox: boolean;
-};
-
-type UpdatedTimeProperty = PropertyValue & {
-  type: "update_time";
-  updated_time: string;
-};
-
+// createdDate field
 type CreatedTimeProperty = PropertyValue & {
   type: "created_time";
   created_time: string;
 };
 
-type TextProperty = PropertyValue & {
-  type: "rich_text" | "text";
-  rich_text?: Array<{ plain_text: string }>;
-  text?: Array<{ plain_text: string }>;
+// updatedDate field
+type UpdatedTimeProperty = PropertyValue & {
+  type: "update_time";
+  updated_time: string;
 };
 
+// published field
+type CheckboxProperty = PropertyValue & {
+  type: "checkbox";
+  checkbox: boolean;
+};
+
+// slug field
+type TextProperty = PropertyValue & {
+  type: "rich_text";
+  rich_text: Array<{ plain_text: string }>;
+};
+
+// Post의 세부 type
 export interface NotionPostSummary {
   id: string;
-  slug: string | null;
   title: string;
   categories: string[];
-  published: boolean;
-  updatedDate: string | null;
   createdDate: string | null;
+  updatedDate: string | null;
+  published: boolean;
+  slug: string | null;
 }
 
-function findProperty<T extends PropertyValue>(
-  properties: PropertyMap,
-  predicate: (prop: PropertyValue) => boolean
-): T | undefined {
-  return Object.values(properties).find(predicate) as T | undefined;
-}
-
+// title를 추출하는 함수
 function extractTitle(properties: PropertyMap): string {
-  const explicitTitle = properties?.title as TitleProperty | undefined;
-  const fallbackTitle = findProperty<TitleProperty>(
-    properties,
-    (prop) => prop?.type === "title"
-  );
-  const titleSource = explicitTitle ?? fallbackTitle;
+  const title = properties?.title as TitleProperty | undefined;
   return (
-    titleSource?.title
-      ?.map((t) => t.plain_text)
-      .join(" ")
-      .trim() ?? ""
+    title?.title // title 객체 안의 title 배열에 접근하여 plain_text 추출
+      ?.map((t) => t.plain_text) // plain_text를 추출해 배열로 반환
+      .join(" ") // 공백으로 연결
+      .trim() ?? "" // 앞뒤 공백 제거
   );
 }
 
+// category를 추출하는 함수
 function extractCategories(properties: PropertyMap): string[] {
-  const categories =
-    (properties?.category as MultiSelectProperty | undefined) ??
-    findProperty<MultiSelectProperty>(
-      properties,
-      (prop) => prop?.type === "multi_select"
-    );
+  const categories = properties?.category as MultiSelectProperty | undefined;
   return categories?.multi_select?.map((item) => item.name) ?? [];
 }
 
-function extractCheckbox(properties: PropertyMap): boolean {
-  const checkbox =
-    (properties?.published as CheckboxProperty | undefined) ??
-    findProperty<CheckboxProperty>(
-      properties,
-      (prop) => prop?.type === "checkbox"
-    );
-  return checkbox?.checkbox ?? false;
-}
-
-function extractUpdatedTime(properties: PropertyMap): string | null {
-  const updated =
-    (properties?.createdDate as UpdatedTimeProperty | undefined) ??
-    findProperty<UpdatedTimeProperty>(
-      properties,
-      (prop) => prop?.type === "updated_time"
-    );
-  return updated?.updated_time ?? null;
-}
-
+// createdDate를 추출하는 함수
 function extractCreatedTime(properties: PropertyMap): string | null {
-  const created =
-    (properties?.createdDate as CreatedTimeProperty | undefined) ??
-    findProperty<CreatedTimeProperty>(
-      properties,
-      (prop) => prop?.type === "created_time"
-    );
+  const created = properties?.createdDate as CreatedTimeProperty | undefined;
   return created?.created_time ?? null;
 }
 
-function extractTextValue(properties: PropertyMap, key: string): string | null {
-  const prop = properties?.[key] as TextProperty | undefined;
-  const textArray = prop?.rich_text ?? prop?.text;
-  if (!textArray || textArray.length === 0) return null;
-  return textArray
-    .map((t) => t.plain_text)
-    .join(" ")
-    .trim();
+// updatedDate를 추출하는 함수
+function extractUpdatedTime(properties: PropertyMap): string | null {
+  const updated = properties?.updatedDate as UpdatedTimeProperty | undefined;
+  return updated?.updated_time ?? null;
 }
 
+// published를 추출하는 함수
+function extractCheckbox(properties: PropertyMap): boolean {
+  const checkbox = properties?.published as CheckboxProperty | undefined;
+  return checkbox?.checkbox ?? false;
+}
+
+// slug를 추출하는 함수
+function extractTextValue(properties: PropertyMap, key: string): string | null {
+  const prop = properties?.[key] as TextProperty | undefined;
+  if (!prop?.rich_text || prop.rich_text.length === 0) return null;
+  return prop.rich_text[0]?.plain_text?.trim() ?? null;
+}
+
+// Notion의 Post 목록을 가져오는 함수
 export async function fetchNotionPosts(options?: {
   pageSize?: number;
   includeDraft?: boolean;
@@ -134,7 +111,7 @@ export async function fetchNotionPosts(options?: {
   const { pageSize = 50, includeDraft = false } = options ?? {};
 
   const response = (await notion.dataSources.query({
-    data_source_id: DATA_SOURCE_ID,
+    data_source_id: DATA_SOURCE_ID as string,
     page_size: pageSize,
   })) as {
     results: Array<{
@@ -145,24 +122,30 @@ export async function fetchNotionPosts(options?: {
     next_cursor: string | null;
   };
 
-  const mapped = response.results.map((page) => {
-    const properties = page.properties ?? {};
+  const rowPostArray = response.results.map((post) => {
+    const properties = post.properties ?? {};
 
+    // 각 post 속성 추출하기
     return {
-      id: page.id,
-      slug: extractTextValue(properties, "slug"),
+      id: post.id,
       title: extractTitle(properties),
       categories: extractCategories(properties),
-      published: extractCheckbox(properties),
+      createdDate: extractCreatedTime(properties),
       updatedDate: extractUpdatedTime(properties),
-      createdDate:
-        extractCreatedTime(properties) ?? extractUpdatedTime(properties),
+      published: extractCheckbox(properties),
+      slug: extractTextValue(properties, "slug"),
     };
   });
 
-  if (includeDraft) {
-    return mapped;
-  }
+  // published 속성이 true인 값만 필터링
+  const filteredPostArray = includeDraft
+    ? rowPostArray
+    : rowPostArray.filter((post) => post.published);
 
-  return mapped.filter((post) => post.published);
+  // updatedDate 기준으로 정렬
+  return filteredPostArray.sort((a, b) => {
+    const dateA = a.updatedDate ?? "";
+    const dateB = b.updatedDate ?? "";
+    return new Date(dateB).getTime() - new Date(dateA).getTime(); // 내림차순
+  });
 }
