@@ -1,54 +1,13 @@
-import { notion } from "./notion";
-
-const DATA_SOURCE_ID = process.env.NOTION_DATA_SOURCE_ID;
-if (!DATA_SOURCE_ID) {
-  throw new Error("⚠️ NOTION_DATA_SOURCE_ID 환경 변수를 확인해주세요.");
-}
-
-// Notion 속성들의 기본 형태
-type PropertyValue = {
-  type?: string;
-  [key: string]: unknown; // 인덱스 시그니처 - key는 문자열, 값은 어떤 타입이든 가능
-};
-
-// 속성들의 Dictionary (key: string, value: PropertyValue)
-type PropertyMap = Record<string, PropertyValue>;
-
-// title field
-type TitleProperty = PropertyMap & {
-  type: "title";
-  title: Array<{ plain_text: string }>;
-};
-
-// category field
-type MultiSelectProperty = PropertyMap & {
-  type: "multi_select";
-  multi_select: Array<{ name: string }>;
-};
-
-// createdDate field
-type CreatedTimeProperty = PropertyValue & {
-  type: "created_time";
-  created_time: string;
-};
-
-// updatedDate field
-type UpdatedTimeProperty = PropertyValue & {
-  type: "update_time";
-  updated_time: string;
-};
-
-// published field
-type CheckboxProperty = PropertyValue & {
-  type: "checkbox";
-  checkbox: boolean;
-};
-
-// slug field
-type TextProperty = PropertyValue & {
-  type: "rich_text";
-  rich_text: Array<{ plain_text: string }>;
-};
+import { notion, DATA_SOURCE_ID } from "./notion";
+import type {
+  PropertyMap,
+  TitleProperty,
+  MultiSelectProperty,
+  CreatedTimeProperty,
+  UpdatedTimeProperty,
+  CheckboxProperty,
+  TextProperty,
+} from "./notionTypes";
 
 // Post의 세부 type
 export interface NotionPostSummary {
@@ -62,7 +21,7 @@ export interface NotionPostSummary {
 }
 
 // title를 추출하는 함수
-function extractTitle(properties: PropertyMap): string {
+export function extractTitle(properties: PropertyMap): string {
   const title = properties?.title as TitleProperty | undefined;
   return (
     title?.title // title 객체 안의 title 배열에 접근하여 plain_text 추출
@@ -73,7 +32,7 @@ function extractTitle(properties: PropertyMap): string {
 }
 
 // category를 추출하는 함수
-function extractCategories(properties: PropertyMap): string[] {
+export function extractCategories(properties: PropertyMap): string[] {
   const categories = properties?.category as MultiSelectProperty | undefined;
   return categories?.multi_select?.map((item) => item.name) ?? [];
 }
