@@ -14,8 +14,8 @@ import { extractTitle, extractCategories } from "./notionPosts";
 
 // slug로 페이지 검색 시 응답 type
 type DataSourceQueryResponse = {
+  // 결과는 배열 형태로 반환
   results: Array<{
-    // 검색 결과 배열
     id: string; // 페이지 id
     properties?: PropertyMap; // 페이지 속성들
   }>;
@@ -29,16 +29,54 @@ async function getPageIdBySlug(slug: string): Promise<string | null> {
   const response = (await notion.dataSources.query({
     data_source_id: DATA_SOURCE_ID,
     filter: {
-      property: "slug", // slug 속성이 입력값과 일치하는 페이지만 조회
+      property: "slug",
       rich_text: {
-        equals: slug,
+        equals: slug, // slug 속성이 입력값과 정확히 일치하는 페이지만 조회
       },
     },
-    page_size: 1, // 첫번째 결과만 필요
+    page_size: 1,
   })) as DataSourceQueryResponse;
 
-  const first = response.results[0];
+  const first = response.results[0]; // 결과는 무조건 1개이기 때문에 첫번째 결과만 조회
   return first?.id ?? null; // 첫번째 결과의 id 반환
+}
+
+// 블록의 children을 재귀적으로 가져오는 함수
+async function fetchBlockChildren(
+  blockId: string
+): Promise<BlockObjectResponse[]> {
+  const children: BlockObjectResponse[] = []; // 수집할 블록 배열
+  let cursor: string | undefined;
+
+  // 결과가 더 있으면 계속 요청하기 위함
+  do {
+    const response = (await notion.blocks.children.list({
+      block_id: blockId,
+      start_cursor: cursor,
+      page_size: 50,
+    })) as {
+      results: Array<BlockObjectResponse | PartialBlockObjectResponse>;
+      has_more: boolean;
+      next_cursor: string | null;
+    };
+
+    for (const block of response.results) {
+      if ("type" in block) { // block 타입이 있는 경우에만
+        const fullBlock = block as BlockObjectResponse;
+        children.push(fullBlock);
+
+        // 재귀 호출: 해당 block도 children이 있는 경우 재귀적으로 가져오기
+        if (fullBlock.has_children) {
+          const nestedChildren = await fetchBlockChildren(fullBlock.id);
+          children.push(...nestedChildren);
+        }
+      }
+    }
+
+    cursor = response.has_more ? response.next_cursor ?? undefined : undefined;
+  } while (cursor);
+
+  return children;
 }
 
 // 페이지의 모든 Block(내용) 가져오기
@@ -57,12 +95,20 @@ async function fetchBlocks(pageId: string) {
       has_more: boolean;
       next_cursor: string | null;
     };
-    response.results.forEach((block) => {
+
+    for (const block of response.results) {
       if ("type" in block) {
-        // type이 있는 블록만 수집
-        blocks.push(block as BlockObjectResponse);
+        const fullBlock = block as BlockObjectResponse;
+        blocks.push(fullBlock);
+
+        // has_children이 true인 경우 children도 재귀적으로 가져오기
+        if (fullBlock.has_children) {
+          const children = await fetchBlockChildren(fullBlock.id);
+          blocks.push(...children);
+        }
       }
-    });
+    }
+
     cursor = response.has_more ? response.next_cursor ?? undefined : undefined;
   } while (cursor);
 
@@ -126,6 +172,7 @@ type NotionPostDetail = {
   blocks: BlockObjectResponse[];
 };
 
+// Post 1개의 상세 정보를 가져오는 함수
 export async function fetchNotionPostDetail(
   slug: string
 ): Promise<NotionPostDetail> {
