@@ -1,0 +1,16 @@
+.wrap-back-to-link {
+  margin-bottom: 1rem;
+}
+
+.button-back {
+  font-size: 1rem;
+  text-decoration: none;
+  color: rgb(77, 77, 77);
+  cursor: pointer;
+  padding: 0 1rem 0 0;
+}
+
+.button-back:hover {
+  text-decoration: underline;
+  color: rgb(100, 100, 100);
+}
