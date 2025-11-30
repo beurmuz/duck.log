@@ -35,6 +35,7 @@
 }
 
 .info-part-3 {
+  font-size: 3.5rem;
   animation-delay: 0.9s;
 }
 
@@ -64,6 +65,11 @@
   text-align: right;
   padding: 0.8rem 0;
   margin-bottom: 2rem;
+}
+
+.post-title:hover {
+  text-decoration: underline;
+  color: rgb(100, 100, 100);
 }
 
 .latest-post-wrapper {
