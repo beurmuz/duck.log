@@ -61,7 +61,8 @@ async function fetchBlockChildren(
     };
 
     for (const block of response.results) {
-      if ("type" in block) { // block 타입이 있는 경우에만
+      if ("type" in block) {
+        // block 타입이 있는 경우에만
         const fullBlock = block as BlockObjectResponse;
         children.push(fullBlock);
 
@@ -136,30 +137,16 @@ function extractCategoriesFromPage(page: PageWithTitle): string[] {
   return extractCategories(properties);
 }
 
-// 페이지의 날짜 추출
+// 페이지의 날짜 추출 (날짜 타입만 처리)
 function extractDateFromPage(
   page: PageWithTitle,
   key: "updatedDate" | "createdDate"
 ): string | null {
-  const property = page.properties?.[key] as
-    | DateProperty
-    | CreatedTimeProperty
-    | LastEditedTimeProperty
-    | undefined;
-  if (!property) {
+  const property = page.properties?.[key] as DateProperty | undefined;
+  if (!property || property.type !== "date") {
     return null;
   }
-  // 타입별 처리
-  if (property.type === "date") {
-    return property.date?.start ?? null;
-  }
-  if (property.type === "created_time") {
-    return property.created_time ?? null;
-  }
-  if (property.type === "last_edited_time") {
-    return property.last_edited_time ?? null;
-  }
-  return null;
+  return property.date?.start ?? null;
 }
 
 // Notion 최종 반환 타입
@@ -188,10 +175,8 @@ export async function fetchNotionPostDetail(
 
   const title = extractTitleFromPage(page);
   const categories = extractCategoriesFromPage(page);
-  const createdDate =
-    extractDateFromPage(page, "createdDate") ?? page.created_time ?? null;
-  const updatedDate =
-    extractDateFromPage(page, "updatedDate") ?? page.last_edited_time ?? null;
+  const createdDate = extractDateFromPage(page, "createdDate");
+  const updatedDate = extractDateFromPage(page, "updatedDate");
 
   return { pageId, title, categories, createdDate, updatedDate, blocks };
 }

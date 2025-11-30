@@ -5,6 +5,7 @@ import type {
   MultiSelectProperty,
   CreatedTimeProperty,
   UpdatedTimeProperty,
+  DateProperty,
   CheckboxProperty,
   TextProperty,
 } from "./notionTypes";
@@ -37,16 +38,18 @@ export function extractCategories(properties: PropertyMap): string[] {
   return categories?.multi_select?.map((item) => item.name) ?? [];
 }
 
-// createdDate를 추출하는 함수
+// createdDate를 추출하는 함수 (날짜 타입만 처리)
 function extractCreatedTime(properties: PropertyMap): string | null {
-  const created = properties?.createdDate as CreatedTimeProperty | undefined;
-  return created?.created_time ?? null;
+  const created = properties?.createdDate as DateProperty | undefined;
+  if (!created || created.type !== "date") return null;
+  return created.date?.start ?? null;
 }
 
-// updatedDate를 추출하는 함수
+// updatedDate를 추출하는 함수 (날짜 타입만 처리)
 function extractUpdatedTime(properties: PropertyMap): string | null {
-  const updated = properties?.updatedDate as UpdatedTimeProperty | undefined;
-  return updated?.updated_time ?? null;
+  const updated = properties?.updatedDate as DateProperty | undefined;
+  if (!updated || updated.type !== "date") return null;
+  return updated.date?.start ?? null;
 }
 
 // published를 추출하는 함수
