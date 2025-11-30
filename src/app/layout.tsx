@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { GA_TRACKING_ID } from "@/lib/gtag";
 import Analytics from "@/components/Analytics";
+import { Analytics as VercelAnalytics } from "@vercel/analytics/next";
 import Script from "next/script";
 
 import Header from "@/layouts/Header";
@@ -39,6 +40,7 @@ export default function RootLayout({
           </>
         )}
         <Analytics />
+        {process.env.NODE_ENV === "production" && <VercelAnalytics />}
         <Header />
         {children}
         <Footer />

@@ -14,12 +14,12 @@ const mainPage = async () => {
     <section className={cx("wrap-page")}>
       <ArticleWrap>
         <h2 className={cx("info")}>
-          <span className={cx("info-part", "info-part-1")}>I&apos;m a</span>
+          {/* <span className={cx("info-part", "info-part-1")}>I&apos;m a</span> */}
           <span className={cx("info-part", "info-part-2")}>
             Frontend Engineer,
           </span>
           <span className={cx("info-part", "info-part-3")}>
-            Jang-SeoRyeong.
+            Jang Seo-Ryeong.
           </span>
         </h2>
       </ArticleWrap>
