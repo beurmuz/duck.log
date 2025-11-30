@@ -10,7 +10,7 @@
 
   .site-title {
     font-size: 1rem;
-    font-weight: 500;
+    font-weight: 700;
     margin: 0;
   }
 
@@ -29,7 +29,7 @@
 
     .site-name {
       font-size: 1rem;
-      font-weight: 300;
+      font-weight: 500;
     }
   }
 }
@@ -37,3 +37,13 @@
 .active {
   background-color: rgb(251, 231, 77);
 }
+
+/* .site-title:hover {
+  text-decoration: underline;
+  color: rgb(100, 100, 100);
+}
+
+.site-name:hover {
+  text-decoration: underline;
+  color: rgb(100, 100, 100);
+} */

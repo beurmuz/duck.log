@@ -16,7 +16,7 @@ const Footer = () => {
       </p> */}
       <p className={cx("item-copyright")}>
         © {startYear === nowYear ? `${nowYear} ` : `${startYear}-${nowYear} `}
-        Jang-SeoRyeong. all rights reserved.
+        Jang Seo-Ryeong. all rights reserved.
       </p>
       {/* <p className={cx("item-email")}>contact. fallinta2@gmail.com</p> */}
     </footer>
