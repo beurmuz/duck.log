@@ -3,6 +3,8 @@
 .env
 .env.local
 
+src/app/shorts/
+
 # dependencies
 /node_modules
 /.pnp
