@@ -1,20 +1,15 @@
 import { notFound } from "next/navigation";
+// import BackToLink from "@/components/UI/BackToLink";
 import { fetchNotionPostDetail } from "@/lib/notionPostDetail";
 import NotionRenderer from "@/components/NotionRenderer";
+import { formatDate } from "@/lib/dateUtils";
+import classNames from "classnames/bind";
+import styles from "./ArchiveDetail.module.css";
+
+const cx = classNames.bind(styles);
 
 type ArchiveDetailProps = {
   params: Promise<{ slug: string }>;
-};
-
-const formatDate = (value: string | null) => {
-  if (!value) return "-";
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "-";
-  return date.toLocaleDateString("ko-KR", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  });
 };
 
 export default async function ArchiveDetailPage({
@@ -26,44 +21,28 @@ export default async function ArchiveDetailPage({
     const detail = await fetchNotionPostDetail(slug);
 
     return (
-      <article style={{ padding: "2rem" }}>
-        <header style={{ marginBottom: "2rem" }}>
-          <h1 style={{ fontSize: "2rem", fontWeight: 700 }}>{detail.title}</h1>
-          <div style={{ marginTop: "0.5rem", color: "#555" }}>
-            <div>created At: {formatDate(detail.createdDate)}</div>
-            <div>updated At: {formatDate(detail.updatedDate)}</div>
-          </div>
+      <section className={cx("wrap-page")}>
+        <header className={cx("wrap-header")}>
+          {/* <BackToLink /> */}
           {detail.categories.length > 0 && (
-            <ul
-              style={{
-                display: "flex",
-                gap: "0.5rem",
-                marginTop: "1rem",
-                listStyle: "none",
-                padding: 0,
-              }}
-            >
+            <ul className={cx("post-categories")}>
               {detail.categories.map((category) => (
-                <li
-                  key={category}
-                  style={{
-                    padding: "0.2rem 0.8rem",
-                    borderRadius: "999px",
-                    backgroundColor: "#e3f2fd",
-                    fontSize: "0.85rem",
-                  }}
-                >
+                <li className={cx("post-category")} key={category}>
                   {category}
                 </li>
               ))}
             </ul>
           )}
+          <h1 className={cx("post-title")}>{detail.title}</h1>
+          <div className={cx("post-date")}>
+            {formatDate(detail.updatedDate)} updated
+          </div>
         </header>
 
-        <section style={{ lineHeight: 1.7 }}>
+        <section className={cx("wrap-notioncontent")}>
           <NotionRenderer blocks={detail.blocks} />
         </section>
-      </article>
+      </section>
     );
   } catch (error) {
     console.error(error);

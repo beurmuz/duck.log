@@ -1,0 +1,43 @@
+.wrap-page {
+  padding: 2rem 0;
+}
+
+.wrap-header {
+  display: flex;
+  flex-direction: column;
+}
+
+.post-categories {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+  /* margin-bottom: 0.5rem; */
+  list-style: none;
+  padding: 0;
+}
+
+.post-category {
+  font-size: 1rem;
+  color: white;
+  background-color: rgb(221, 180, 0);
+  border-radius: 1rem;
+  padding: 0.35rem 0.6rem 0.25rem 0.6rem;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+.post-title {
+  font-size: 2rem;
+  font-weight: 700;
+  padding: 0.5rem 0;
+}
+
+.post-date {
+  font-size: 1rem;
+  color: rgb(150, 150, 150);
+}
+
+.wrap-notioncontent {
+  padding: 1rem 0;
+}
