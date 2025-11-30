@@ -1,6 +1,7 @@
 import classNames from "classnames/bind";
 import styles from "./PostItem.module.css";
 import { ReactNode } from "react";
+import Link from "next/link";
 
 const cx = classNames.bind(styles);
 
@@ -10,14 +11,17 @@ export default function PostItem({
   postDate,
   postCategories,
 }: {
-  postUrl: string;
+  postUrl: string; // `/archive/${slug || id}`
   postTitle: string;
   postDate: string;
   postCategories: Array<string>;
 }): ReactNode {
   return (
     <article className={cx("wrap-postitem")}>
-      <h2 className={cx("post-title")}>{postTitle}</h2>
+      <h2 className={cx("post-title")}>
+        <Link href={postUrl}>{postTitle}</Link>
+      </h2>
+
       <div className={cx("wrap-post-info")}>
         <ul className={cx("wrap-categories")}>
           {postCategories.map((category, id) => (

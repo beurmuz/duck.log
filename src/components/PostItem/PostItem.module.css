@@ -5,9 +5,7 @@
   border-radius: 0.5rem;
   width: 100%;
   margin-bottom: 20px;
-
   transition: transform 0.3s ease-in-out, background-color 0.3s ease;
-  /* 브라우저에게 해당 속성이 바뀔 거라고 알려주어 GPU 레이어로 미리 올리는 최적화 기법 */
   will-change: transform;
 }
 
@@ -16,14 +14,6 @@
   background-color: rgb(251, 231, 77);
   cursor: pointer;
 }
-
-/* .wrap-image {
-  width: 100%;
-  height: 13rem;
-  border: 1px solid lightgray;
-  border-radius: 0.5rem;
-  background-color: lightgray;
-} */
 
 .post-title {
   font-size: 1rem;
@@ -44,6 +34,7 @@
   .wrap-categories {
     display: flex;
     flex-direction: row;
+    gap: 0.5rem;
   }
 }
 
@@ -58,5 +49,4 @@
   background-color: rgb(124, 124, 124);
   border-radius: 0.2rem;
   padding: 0.3rem;
-  margin-right: 0.5rem;
 }

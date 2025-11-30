@@ -2,19 +2,9 @@ import PostItem from "../PostItem/PostItem";
 import classNames from "classnames/bind";
 import styles from "./PostList.module.css";
 import { fetchNotionPosts } from "@/lib/notionPosts";
+import { formatDate } from "@/lib/dateUtils";
 
 const cx = classNames.bind(styles);
-
-const formatDate = (dateStr: string | null): string => {
-  if (!dateStr) return "";
-  const date = new Date(dateStr);
-  if (Number.isNaN(date.getTime())) return "";
-  return date.toLocaleDateString("ko-KR", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  });
-};
 
 const PostList = async () => {
   const posts = await fetchNotionPosts();
@@ -38,7 +28,7 @@ const PostList = async () => {
         {posts.map((post) => (
           <PostItem
             key={post.id}
-            postUrl={`/archive/${post.slug}`}
+            postUrl={`/archive/${post.slug ?? post.id}`}
             postTitle={post.title || "Untitled"}
             postDate={formatDate(post.updatedDate ?? post.createdDate)}
             postCategories={post.categories}
