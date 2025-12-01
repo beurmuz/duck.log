@@ -101,12 +101,80 @@ const renderBlock = (
     }
     // Quote block (인용)
     case "quote": {
+      // 인용 블록 안의 children을 리스트 그룹화하여 렌더링
+      const renderQuoteChildren = (
+        childrenBlocks: BlockObjectResponse[]
+      ): React.ReactNode[] => {
+        const result: React.ReactNode[] = [];
+        let currentList: BlockObjectResponse[] = [];
+        let currentListType:
+          | "bulleted_list_item"
+          | "numbered_list_item"
+          | null = null;
+
+        const renderListGroup = (
+          list: BlockObjectResponse[],
+          type: "bulleted_list_item" | "numbered_list_item"
+        ) => {
+          if (list.length === 0) return null;
+          return type === "bulleted_list_item" ? (
+            <ul key={`list-${list[0].id}`} className={cx("bulleted-list")}>
+              {list.map((b) => renderBlock(b, allBlocks))}
+            </ul>
+          ) : (
+            <ol key={`list-${list[0].id}`} className={cx("numbered-list")}>
+              {list.map((b) => renderBlock(b, allBlocks))}
+            </ol>
+          );
+        };
+
+        for (const child of childrenBlocks) {
+          if (child.type === "bulleted_list_item") {
+            if (currentListType !== "bulleted_list_item") {
+              if (currentList.length > 0 && currentListType) {
+                result.push(renderListGroup(currentList, currentListType));
+              }
+              currentList = [];
+              currentListType = "bulleted_list_item";
+            }
+            currentList.push(child);
+          } else if (child.type === "numbered_list_item") {
+            if (currentListType !== "numbered_list_item") {
+              if (currentList.length > 0 && currentListType) {
+                result.push(renderListGroup(currentList, currentListType));
+              }
+              currentList = [];
+              currentListType = "numbered_list_item";
+            }
+            currentList.push(child);
+          } else {
+            // 리스트가 아닌 블록
+            if (currentList.length > 0 && currentListType) {
+              result.push(renderListGroup(currentList, currentListType));
+              currentList = [];
+              currentListType = null;
+            }
+            const rendered = renderBlock(child, allBlocks);
+            if (rendered) {
+              result.push(rendered);
+            }
+          }
+        }
+
+        // 마지막 리스트 처리
+        if (currentList.length > 0 && currentListType) {
+          result.push(renderListGroup(currentList, currentListType));
+        }
+
+        return result;
+      };
+
       return (
         <blockquote key={block.id} className={cx("quote")}>
           {renderRichText(block.quote.rich_text)}
           {children.length > 0 && (
             <div className={cx("quote-children")}>
-              {children.map((child) => renderBlock(child, allBlocks))}
+              {renderQuoteChildren(children)}
             </div>
           )}
         </blockquote>
@@ -279,25 +347,6 @@ const renderBlock = (
         </div>
       );
     }
-    case "embed":
-    case "link_preview": {
-      const url =
-        block.type === "embed" ? block.embed.url : block.link_preview.url;
-      const caption =
-        block.type === "embed"
-          ? renderRichTextPlain(block.embed.caption ?? [])
-          : "";
-      return (
-        <div key={block.id} className={cx("embed-container")}>
-          <iframe
-            src={url}
-            className={cx("embed-iframe")}
-            title="Embedded content"
-          />
-          {caption && <div className={cx("embed-caption")}>{caption}</div>}
-        </div>
-      );
-    }
     default:
       return null;
   }
@@ -338,7 +387,12 @@ const renderRichText = (texts: RichTextItemResponse[]) => {
 
     if (href) {
       content = (
-        <a href={href} target="_blank" rel="noopener noreferrer">
+        <a
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={cx("link")}
+        >
           {content}
         </a>
       );
@@ -358,9 +412,6 @@ export default function NotionRenderer({
 }: {
   blocks: BlockObjectResponse[];
 }) {
-  // 렌더링된 블록 ID 추적 (중복 방지)
-  const renderedBlockIds = new Set<string>();
-
   // 페이지 레벨 블록만 필터링 (parent가 page_id인 것들)
   const topLevelBlocks = blocks.filter((block) => {
     if (!block.parent) return false;
@@ -434,7 +485,6 @@ export default function NotionRenderer({
       const rendered = renderBlock(block, blocks);
       if (rendered) {
         groupedBlocks.push(rendered);
-        renderedBlockIds.add(block.id);
       }
     }
   }
