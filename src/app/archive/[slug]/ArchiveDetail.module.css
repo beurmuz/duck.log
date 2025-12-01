@@ -41,3 +41,28 @@
 .wrap-notioncontent {
   padding: 1rem 0;
 }
+
+.post-footer {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgb(230, 230, 230);
+  display: block;
+}
+
+.post-footer-text {
+  font-size: 0.9rem;
+  color: rgb(100, 100, 100);
+  line-height: 1.6;
+  margin: 0.5rem 0;
+  display: block;
+}
+
+.post-footer-link {
+  color: rgb(37, 99, 235);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.post-footer-link:hover {
+  color: rgb(29, 78, 216);
+}
