@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 // import BackToLink from "@/components/UI/BackToLink";
 import { fetchNotionPostDetail } from "@/lib/notionPostDetail";
+import { fetchNotionPosts } from "@/lib/notionPosts";
 import NotionRenderer from "@/components/NotionRenderer";
 import { formatDate } from "@/lib/dateUtils";
 import classNames from "classnames/bind";
@@ -8,9 +9,19 @@ import styles from "./ArchiveDetail.module.css";
 
 const cx = classNames.bind(styles);
 
-// 페이지 재검증 시간 설정 (초 단위)
-// 예: 3600 = 1시간, 86400 = 24시간, 604800 = 7일
+// 페이지 재검증 시간 7일로 설정
 export const revalidate = 604800;
+
+// 빌드 타임에 모든 slug를 미리 생성
+export async function generateStaticParams() {
+  const posts = await fetchNotionPosts();
+
+  return posts
+    .filter((post) => post.slug) // slug가 있는 포스트만
+    .map((post) => ({
+      slug: post.slug!,
+    }));
+}
 
 type ArchiveDetailProps = {
   params: Promise<{ slug: string }>;
