@@ -41,79 +41,71 @@ async function getPageIdBySlug(slug: string): Promise<string | null> {
   return first?.id ?? null; // 첫번째 결과의 id 반환
 }
 
-// 블록의 children을 재귀적으로 가져오는 함수
-async function fetchBlockChildren(
+// Notion API 응답 타입
+type BlocksListResponse = {
+  results: Array<BlockObjectResponse | PartialBlockObjectResponse>;
+  has_more: boolean;
+  next_cursor: string | null;
+};
+
+// 단일 블록의 children을 가져오는 함수 (페이지네이션 처리)
+async function fetchBlockChildrenPage(
   blockId: string
 ): Promise<BlockObjectResponse[]> {
-  const children: BlockObjectResponse[] = []; // 수집할 블록 배열
+  const blocks: BlockObjectResponse[] = [];
   let cursor: string | undefined;
 
-  // 결과가 더 있으면 계속 요청하기 위함
   do {
-    const response = (await notion.blocks.children.list({
-      block_id: blockId,
-      start_cursor: cursor,
-      page_size: 50,
-    })) as {
-      results: Array<BlockObjectResponse | PartialBlockObjectResponse>;
-      has_more: boolean;
-      next_cursor: string | null;
-    };
+    try {
+      const response = (await notion.blocks.children.list({
+        block_id: blockId,
+        start_cursor: cursor,
+        page_size: 50,
+      })) as BlocksListResponse;
 
-    for (const block of response.results) {
-      if ("type" in block) {
-        // block 타입이 있는 경우에만
-        const fullBlock = block as BlockObjectResponse;
-        children.push(fullBlock);
-
-        // 재귀 호출: 해당 block도 children이 있는 경우 재귀적으로 가져오기
-        if (fullBlock.has_children) {
-          const nestedChildren = await fetchBlockChildren(fullBlock.id);
-          children.push(...nestedChildren);
+      for (const block of response.results) {
+        if ("type" in block) {
+          blocks.push(block as BlockObjectResponse);
         }
       }
+
+      cursor = response.has_more
+        ? response.next_cursor ?? undefined
+        : undefined;
+    } catch (error) {
+      console.error(`Failed to fetch children for block ${blockId}:`, error);
+      // 에러 발생 시 현재까지 수집한 블록 반환
+      break;
     }
-
-    cursor = response.has_more ? response.next_cursor ?? undefined : undefined;
-  } while (cursor);
-
-  return children;
-}
-
-// 페이지의 모든 Block(내용) 가져오기
-async function fetchBlocks(pageId: string) {
-  const blocks: BlockObjectResponse[] = []; // 수집할 Block 배열
-  let cursor: string | undefined; // 다음 페이지 커서
-
-  do {
-    // notion.blocks.children.list()로 Block 목록 조회
-    const response = (await notion.blocks.children.list({
-      block_id: pageId,
-      start_cursor: cursor,
-      page_size: 50,
-    })) as {
-      results: Array<BlockObjectResponse | PartialBlockObjectResponse>;
-      has_more: boolean;
-      next_cursor: string | null;
-    };
-
-    for (const block of response.results) {
-      if ("type" in block) {
-        const fullBlock = block as BlockObjectResponse;
-        blocks.push(fullBlock);
-
-        // has_children이 true인 경우 children도 재귀적으로 가져오기
-        if (fullBlock.has_children) {
-          const children = await fetchBlockChildren(fullBlock.id);
-          blocks.push(...children);
-        }
-      }
-    }
-
-    cursor = response.has_more ? response.next_cursor ?? undefined : undefined;
   } while (cursor);
 
   return blocks;
+}
+
+// 페이지의 모든 Block(내용) 가져오기 (반복문 기반, 재귀 없음)
+async function fetchBlocks(pageId: string): Promise<BlockObjectResponse[]> {
+  const allBlocks: BlockObjectResponse[] = [];
+  const queue: string[] = [pageId]; // 처리할 블록 ID 큐
+
+  // 반복문으로 처리하여 스택 오버플로우 방지
+  while (queue.length > 0) {
+    const currentBlockId = queue.shift()!;
+
+    // 현재 블록의 children 가져오기
+    const children = await fetchBlockChildrenPage(currentBlockId);
+
+    // 가져온 블록들을 결과에 추가
+    allBlocks.push(...children);
+
+    // children이 있는 블록들을 큐에 추가 (다음 반복에서 처리)
+    for (const block of children) {
+      if (block.has_children) {
+        queue.push(block.id);
+      }
+    }
+  }
+
+  return allBlocks;
 }
 
 // Notion 페이지 타입
