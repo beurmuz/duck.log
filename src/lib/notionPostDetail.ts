@@ -4,12 +4,7 @@ import type {
   PartialBlockObjectResponse,
   GetPageResponse,
 } from "@notionhq/client/build/src/api-endpoints";
-import type {
-  CreatedTimeProperty,
-  DateProperty,
-  LastEditedTimeProperty,
-  PropertyMap,
-} from "./notionTypes";
+import type { DateProperty, PropertyMap } from "./notionTypes";
 import { extractTitle, extractCategories } from "./notionPosts";
 
 // slug로 페이지 검색 시 응답 type

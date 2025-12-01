@@ -8,6 +8,10 @@ import styles from "./ArchiveDetail.module.css";
 
 const cx = classNames.bind(styles);
 
+// 페이지 재검증 시간 설정 (초 단위)
+// 예: 3600 = 1시간, 86400 = 24시간, 604800 = 7일
+export const revalidate = 604800;
+
 type ArchiveDetailProps = {
   params: Promise<{ slug: string }>;
 };
