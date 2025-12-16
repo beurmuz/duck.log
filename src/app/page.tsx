@@ -1,13 +1,13 @@
 import classNames from "classnames/bind";
 import styles from "./Mainpage.module.css";
 import ArticleWrap from "@/layouts/ArticleWrap";
-import { fetchNotionPosts } from "@/lib/notionPosts";
+import { fetchNotionPostList } from "@/lib/notion/extracts";
 import Link from "next/link";
 
 const cx = classNames.bind(styles);
 
 const mainPage = async () => {
-  const posts = await fetchNotionPosts();
+  const posts = await fetchNotionPostList();
   const latestPost = posts[0];
 
   return (

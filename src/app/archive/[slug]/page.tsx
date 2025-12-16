@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 // import BackToLink from "@/components/UI/BackToLink";
-import { fetchNotionPostDetail } from "@/lib/notionPostDetail";
-import { fetchNotionPosts } from "@/lib/notionPosts";
+import { fetchNotionPostDetail } from "@/lib/notion/postDetail";
+import { fetchNotionPostList } from "@/lib/notion/extracts";
 import NotionRenderer from "@/components/NotionRenderer";
 import { formatDate } from "@/lib/dateUtils";
 import classNames from "classnames/bind";
@@ -14,7 +14,7 @@ export const revalidate = 604800;
 
 // 빌드 타임에 모든 slug를 미리 생성
 export async function generateStaticParams() {
-  const posts = await fetchNotionPosts();
+  const posts = await fetchNotionPostList();
 
   return posts
     .filter((post) => post.slug) // slug가 있는 포스트만

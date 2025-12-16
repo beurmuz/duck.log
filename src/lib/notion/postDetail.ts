@@ -1,11 +1,16 @@
-import { notion, DATA_SOURCE_ID } from "@/lib/notion";
+import { notion, DATA_SOURCE_ID } from "./client";
 import type {
   BlockObjectResponse,
   PartialBlockObjectResponse,
   GetPageResponse,
 } from "@notionhq/client/build/src/api-endpoints";
-import type { DateProperty, PropertyMap } from "./notionTypes";
-import { extractTitle, extractCategories } from "./notionPosts";
+import type { DateProperty, PropertyMap } from "./types";
+import { extractTitle, extractCategories } from "./extracts";
+import { transformBlocks } from "./blocks";
+import type { NotionPost } from "@/models/post";
+
+// 도메인 모델 재export (하위 호환성)
+export type { NotionPost };
 
 // slug로 페이지 검색 시 응답 type
 type DataSourceQueryResponse = {
@@ -136,20 +141,8 @@ function extractDateFromPage(
   return property.date?.start ?? null;
 }
 
-// Notion 최종 반환 타입
-type NotionPostDetail = {
-  pageId: string;
-  title: string;
-  categories: string[];
-  createdDate: string | null;
-  updatedDate: string | null;
-  blocks: BlockObjectResponse[];
-};
-
 // Post 1개의 상세 정보를 가져오는 함수
-export async function fetchNotionPostDetail(
-  slug: string
-): Promise<NotionPostDetail> {
+export async function fetchNotionPostDetail(slug: string): Promise<NotionPost> {
   const pageId = await getPageIdBySlug(slug);
 
   if (!pageId) throw new Error("해당 slug의 페이지를 찾을 수 없습니다.");
@@ -165,5 +158,15 @@ export async function fetchNotionPostDetail(
   const createdDate = extractDateFromPage(page, "createdDate");
   const updatedDate = extractDateFromPage(page, "updatedDate");
 
-  return { pageId, title, categories, createdDate, updatedDate, blocks };
+  // Notion API Block을 도메인 모델로 변환
+  const transformedBlocks = transformBlocks(blocks);
+
+  return {
+    pageId,
+    title,
+    categories,
+    createdDate,
+    updatedDate,
+    blocks: transformedBlocks,
+  };
 }

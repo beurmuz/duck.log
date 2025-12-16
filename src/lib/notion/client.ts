@@ -1,5 +1,6 @@
 import { Client } from "@notionhq/client";
 
+// Notion API 클라이언트 생성
 export const notion = new Client({
   auth: process.env.NOTION_API_KEY,
   notionVersion: "2025-09-03",

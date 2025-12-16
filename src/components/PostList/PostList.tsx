@@ -1,13 +1,13 @@
 import PostItem from "../PostItem/PostItem";
 import classNames from "classnames/bind";
 import styles from "./PostList.module.css";
-import { fetchNotionPosts } from "@/lib/notionPosts";
+import { fetchNotionPostList } from "@/lib/notion/extracts";
 import { formatDate } from "@/lib/dateUtils";
 
 const cx = classNames.bind(styles);
 
 const PostList = async () => {
-  const posts = await fetchNotionPosts();
+  const posts = await fetchNotionPostList();
 
   if (posts.length === 0) {
     return (
@@ -30,7 +30,7 @@ const PostList = async () => {
             key={post.id}
             postUrl={`/archive/${post.slug ?? post.id}`}
             postTitle={post.title || "Untitled"}
-            postDate={formatDate(post.updatedDate ?? post.createdDate)}
+            postDate={formatDate(post.createdDate)}
             postCategories={post.categories}
           />
         ))}
