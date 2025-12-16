@@ -11,6 +11,14 @@ import Footer from "@/layouts/Footer";
 export const metadata: Metadata = {
   title: "duck.log",
   description: "duck의 블로그",
+  // SEO 비활성화
+  robots: {
+    index: false, // 검색 엔진 인덱싱 차단
+    follow: false, // 링크 따라가기 차단
+    noarchive: true, // 캐시 저장 차단
+    nosnippet: true, // 스니펫 표시 차단
+    noimageindex: true, // 이미지 인덱싱 차단
+  },
 };
 
 export default function RootLayout({
