@@ -54,8 +54,8 @@ export function extractTextValue(
 
 // -----------------------------------------------------------
 
-// Notion API 응답 type
-type NotionQueryResponse = {
+// Notion API 응답 type (공통 사용)
+export type NotionQueryResponse = {
   results: Array<{ id: string; properties: PropertyMap }>;
   has_more: boolean;
   next_cursor: string | null;

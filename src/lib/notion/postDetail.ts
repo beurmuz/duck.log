@@ -4,58 +4,52 @@ import type {
   PartialBlockObjectResponse,
   GetPageResponse,
 } from "@notionhq/client/build/src/api-endpoints";
-import type { DateProperty, PropertyMap } from "./types";
-import { extractTitle, extractCategories } from "./extracts";
-import { transformBlocks } from "./blocks";
+import type { PropertyMap } from "./types";
+import {
+  extractTitle,
+  extractCategories,
+  extractDateValue,
+  NotionQueryResponse,
+} from "./extracts";
+import { transformBlocks } from "./transforms";
 import type { NotionPost } from "@/models/post";
 
-// 도메인 모델 재export (하위 호환성)
-export type { NotionPost };
-
-// slug로 페이지 검색 시 응답 type
-type DataSourceQueryResponse = {
-  // 결과는 배열 형태로 반환
-  results: Array<{
-    id: string; // 페이지 id
-    properties?: PropertyMap; // 페이지 속성들
-  }>;
-};
-
-// slug로 페이지 ID 찾기
-async function getPageIdBySlug(slug: string): Promise<string | null> {
-  if (!slug) return null;
-
-  // notion API로 호출
-  const response = (await notion.dataSources.query({
-    data_source_id: DATA_SOURCE_ID,
-    filter: {
-      property: "slug",
-      rich_text: {
-        equals: slug, // slug 속성이 입력값과 정확히 일치하는 페이지만 조회
-      },
-    },
-    page_size: 1,
-  })) as DataSourceQueryResponse;
-
-  const first = response.results[0]; // 결과는 무조건 1개이기 때문에 첫번째 결과만 조회
-  return first?.id ?? null; // 첫번째 결과의 id 반환
-}
-
-// Notion API 응답 타입
+// block의 children을 가져올 때, Notion API가 반환하는 응답 타입
 type BlocksListResponse = {
   results: Array<BlockObjectResponse | PartialBlockObjectResponse>;
   has_more: boolean;
   next_cursor: string | null;
 };
 
-// 단일 블록의 children을 가져오는 함수 (페이지네이션 처리)
-async function fetchBlockChildrenPage(
+// Notion Page 정보를 담는 타입
+type NotionPage = GetPageResponse & {
+  properties?: PropertyMap;
+};
+
+// slug로 page id 찾는 함수
+async function getPageIdBySlug(slug: string): Promise<string | null> {
+  if (!slug) return null;
+
+  const response = (await notion.dataSources.query({
+    data_source_id: DATA_SOURCE_ID,
+    filter: {
+      property: "slug",
+      rich_text: { equals: slug }, // slug 속성이 입력값과 정확히 일치하는 페이지만 조회
+    },
+    page_size: 1,
+  })) as NotionQueryResponse;
+
+  return response.results[0]?.id ?? null;
+}
+
+// 특정 block의 children block들을 가져오는 함수 (페이지네이션 처리)
+async function fetchBlockChildrens(
   blockId: string
 ): Promise<BlockObjectResponse[]> {
   const blocks: BlockObjectResponse[] = [];
   let cursor: string | undefined;
 
-  do {
+  while (true) {
     try {
       const response = (await notion.blocks.children.list({
         block_id: blockId,
@@ -63,102 +57,58 @@ async function fetchBlockChildrenPage(
         page_size: 50,
       })) as BlocksListResponse;
 
+      // 타입이 있는 블록만 추가 (완전한 블록만)
       for (const block of response.results) {
         if ("type" in block) {
           blocks.push(block as BlockObjectResponse);
         }
       }
+      if (!response.has_more) break;
 
-      cursor = response.has_more
-        ? response.next_cursor ?? undefined
-        : undefined;
+      // 다음 페이지를 가져오기 위한 cursor 업데이트
+      cursor = response.next_cursor ?? undefined;
     } catch (error) {
       console.error(`Failed to fetch children for block ${blockId}:`, error);
-      // 에러 발생 시 현재까지 수집한 블록 반환
       break;
     }
-  } while (cursor);
-
+  }
   return blocks;
 }
 
-// 페이지의 모든 Block(내용) 가져오기 (반복문 기반, 재귀 없음)
-async function fetchBlocks(pageId: string): Promise<BlockObjectResponse[]> {
+// Page의 모든 Block을 가져오는 함수
+async function fetchAllBlocks(pageId: string): Promise<BlockObjectResponse[]> {
   const allBlocks: BlockObjectResponse[] = [];
-  const queue: string[] = [pageId]; // 처리할 블록 ID 큐
+  const queue: string[] = [pageId];
 
-  // 반복문으로 처리하여 스택 오버플로우 방지
   while (queue.length > 0) {
     const currentBlockId = queue.shift()!;
+    const children = await fetchBlockChildrens(currentBlockId); // 가져오기
+    allBlocks.push(...children); // 저장하기
 
-    // 현재 블록의 children 가져오기
-    const children = await fetchBlockChildrenPage(currentBlockId);
-
-    // 가져온 블록들을 결과에 추가
-    allBlocks.push(...children);
-
-    // children이 있는 블록들을 큐에 추가 (다음 반복에서 처리)
     for (const block of children) {
-      if (block.has_children) {
-        queue.push(block.id);
-      }
+      // 탐색하기
+      if (block.has_children) queue.push(block.id);
     }
   }
-
   return allBlocks;
 }
 
-// Notion 페이지 타입
-type PageWithTitle = {
-  id: string;
-  created_time?: string;
-  last_edited_time?: string;
-  properties?: Record<string, unknown>;
-} & GetPageResponse; // 페이지 확장
-
-// 페이지의 title 추출
-function extractTitleFromPage(page: PageWithTitle): string {
-  const properties = (page.properties ?? {}) as PropertyMap;
-  const title = extractTitle(properties);
-  return title || "Untitled";
-}
-
-// 페이지의 categories 추출
-function extractCategoriesFromPage(page: PageWithTitle): string[] {
-  const properties = (page.properties ?? {}) as PropertyMap;
-  return extractCategories(properties);
-}
-
-// 페이지의 날짜 추출 (날짜 타입만 처리)
-function extractDateFromPage(
-  page: PageWithTitle,
-  key: "updatedDate" | "createdDate"
-): string | null {
-  const property = page.properties?.[key] as DateProperty | undefined;
-  if (!property || property.type !== "date") {
-    return null;
-  }
-  return property.date?.start ?? null;
-}
-
-// Post 1개의 상세 정보를 가져오는 함수
+// Main function: slug로 NotionPost 상세 정보 가져오기
 export async function fetchNotionPostDetail(slug: string): Promise<NotionPost> {
   const pageId = await getPageIdBySlug(slug);
+  if (!pageId)
+    throw new Error(`해당 slug의 페이지를 찾을 수 없습니다: ${slug}`);
 
-  if (!pageId) throw new Error("해당 slug의 페이지를 찾을 수 없습니다.");
+  const [page, blocks] = await Promise.all([
+    notion.pages.retrieve({ page_id: pageId }) as Promise<NotionPage>,
+    fetchAllBlocks(pageId),
+  ]);
 
-  // notion.pages.retrieve()로 페이지 메타데이터 조회
-  const page = (await notion.pages.retrieve({
-    page_id: pageId,
-  })) as PageWithTitle;
-  const blocks = await fetchBlocks(pageId);
-
-  const title = extractTitleFromPage(page);
-  const categories = extractCategoriesFromPage(page);
-  const createdDate = extractDateFromPage(page, "createdDate");
-  const updatedDate = extractDateFromPage(page, "updatedDate");
-
-  // Notion API Block을 도메인 모델로 변환
+  const properties = page.properties ?? {};
+  const title = extractTitle(properties) || "Untitled";
+  const categories = extractCategories(properties);
+  const createdDate = extractDateValue(properties, "createdDate");
+  const updatedDate = extractDateValue(properties, "updatedDate");
   const transformedBlocks = transformBlocks(blocks);
 
   return {
