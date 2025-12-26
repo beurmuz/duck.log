@@ -18,28 +18,70 @@ import type {
   ToggleBlock,
   TableRowBlock,
   EquationBlock,
+  BookmarkBlock,
+  VideoBlock,
 } from "@/models/block";
+import React from "react";
 
 const cx = classNames.bind(styles);
 
-// Block을 rendering하는 함수 (재귀적으로 children 처리)
-const renderBlock = (
+// rich text를 plain text로 변환하는 함수
+const renderRichTextToPlainText = (texts: RichText[]) =>
+  texts.map((text) => text.plainText).join("");
+
+// rich text를 React 요소로 렌더링하는 함수 (폰트 속성 적용)
+const renderRichTextToReactElement = (texts: RichText[]) => {
+  return texts.map((text, idx) => {
+    const { annotations, plainText, href } = text;
+    const style: React.CSSProperties = {};
+    let content: React.ReactNode = plainText;
+
+    if (annotations.bold) style.fontWeight = "bold";
+    if (annotations.italic) style.fontStyle = "italic";
+    if (annotations.underline) style.textDecoration = "underline";
+    if (annotations.strikethrough) style.textDecoration = "line-through";
+    if (annotations.code)
+      content = <code className={cx("inline-code")}>{plainText}</code>;
+
+    if (href) {
+      content = (
+        <a
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={cx("link")}
+        >
+          {content}
+        </a>
+      );
+    }
+
+    // 기본 span 요소로 렌더링
+    return (
+      <span key={idx} style={style}>
+        {content}
+      </span>
+    );
+  });
+};
+
+// Block의 type에 따라 렌더링하는 함수
+const renderBlockByType = (
   block: NotionBlock,
   allBlocks: NotionBlock[]
 ): React.ReactNode => {
-  // parent가 현재 block인 것들을 찾기
-  const children = allBlocks.filter(
+  const childrenList = allBlocks.filter(
     (b) => b.parentType === "block" && b.parentId === block.id
   );
 
   // block의 type에 따라 렌더링
   switch (block.type) {
-    // Heading 블록
+    // 1. Heading Block
     case "heading_1": {
       const headingBlock = block as HeadingBlock;
       return (
         <h1 key={block.id} className={cx(["heading", "heading1"])}>
-          {renderRichText(headingBlock.richText)}
+          {renderRichTextToReactElement(headingBlock.richText)}
         </h1>
       );
     }
@@ -47,7 +89,7 @@ const renderBlock = (
       const headingBlock = block as HeadingBlock;
       return (
         <h2 key={block.id} className={cx(["heading", "heading2"])}>
-          {renderRichText(headingBlock.richText)}
+          {renderRichTextToReactElement(headingBlock.richText)}
         </h2>
       );
     }
@@ -55,155 +97,98 @@ const renderBlock = (
       const headingBlock = block as HeadingBlock;
       return (
         <h3 key={block.id} className={cx(["heading", "heading3"])}>
-          {renderRichText(headingBlock.richText)}
+          {renderRichTextToReactElement(headingBlock.richText)}
         </h3>
       );
     }
-    // Paragraph 블록
+    // 2. Paragraph Block
     case "paragraph": {
       const paragraphBlock = block as ParagraphBlock;
       return (
-        <p key={block.id} className={cx("paragraph")}>
-          {renderRichText(paragraphBlock.richText)}
-        </p>
+        <div key={block.id} className={cx("paragraph")}>
+          {renderRichTextToReactElement(paragraphBlock.richText)}
+        </div>
       );
     }
-    // List block
+    // 3. Bulleted List Item Block
     case "bulleted_list_item": {
       const listBlock = block as BulletedListItemBlock;
-      const bulletedChildren = children.filter(
+      const bulletedChildren = childrenList.filter(
         (b) => b.type === "bulleted_list_item"
       ) as BulletedListItemBlock[];
-      const numberedChildren = children.filter(
+      const numberedChildren = childrenList.filter(
         (b) => b.type === "numbered_list_item"
       ) as NumberedListItemBlock[];
+
       return (
         <li key={block.id} className={cx("bulleted-list-item")}>
-          {renderRichText(listBlock.richText)}
+          {renderRichTextToReactElement(listBlock.richText)}
           {bulletedChildren.length > 0 && (
             <ul className={cx("bulleted-list")}>
-              {bulletedChildren.map((child) => renderBlock(child, allBlocks))}
+              {bulletedChildren.map((child) =>
+                renderBlockByType(child, allBlocks)
+              )}
             </ul>
           )}
           {numberedChildren.length > 0 && (
             <ol className={cx("numbered-list")}>
-              {numberedChildren.map((child) => renderBlock(child, allBlocks))}
+              {numberedChildren.map((child) =>
+                renderBlockByType(child, allBlocks)
+              )}
             </ol>
           )}
         </li>
       );
     }
+    // 4. Numbered List Item Block
     case "numbered_list_item": {
       const listBlock = block as NumberedListItemBlock;
-      const numberedChildren = children.filter(
+      const numberedChildren = childrenList.filter(
         (b) => b.type === "numbered_list_item"
       ) as NumberedListItemBlock[];
-      const bulletedChildren = children.filter(
+      const bulletedChildren = childrenList.filter(
         (b) => b.type === "bulleted_list_item"
       ) as BulletedListItemBlock[];
+
       return (
         <li key={block.id} className={cx("numbered-list-item")}>
-          {renderRichText(listBlock.richText)}
+          {renderRichTextToReactElement(listBlock.richText)}
           {numberedChildren.length > 0 && (
             <ol className={cx("numbered-list")}>
-              {numberedChildren.map((child) => renderBlock(child, allBlocks))}
+              {numberedChildren.map((child) =>
+                renderBlockByType(child, allBlocks)
+              )}
             </ol>
           )}
           {bulletedChildren.length > 0 && (
             <ul className={cx("bulleted-list")}>
-              {bulletedChildren.map((child) => renderBlock(child, allBlocks))}
+              {bulletedChildren.map((child) =>
+                renderBlockByType(child, allBlocks)
+              )}
             </ul>
           )}
         </li>
       );
     }
-    // Quote block (인용)
+    // 5. Quote Block
     case "quote": {
       const quoteBlock = block as QuoteBlock;
-      // 인용 블록 안의 children을 리스트 그룹화하여 렌더링
-      const renderQuoteChildren = (
-        childrenBlocks: NotionBlock[]
-      ): React.ReactNode[] => {
-        const result: React.ReactNode[] = [];
-        let currentList: NotionBlock[] = [];
-        let currentListType:
-          | "bulleted_list_item"
-          | "numbered_list_item"
-          | null = null;
-
-        const renderListGroup = (
-          list: NotionBlock[],
-          type: "bulleted_list_item" | "numbered_list_item"
-        ) => {
-          if (list.length === 0) return null;
-          return type === "bulleted_list_item" ? (
-            <ul key={`list-${list[0].id}`} className={cx("bulleted-list")}>
-              {list.map((b) => renderBlock(b, allBlocks))}
-            </ul>
-          ) : (
-            <ol key={`list-${list[0].id}`} className={cx("numbered-list")}>
-              {list.map((b) => renderBlock(b, allBlocks))}
-            </ol>
-          );
-        };
-
-        for (const child of childrenBlocks) {
-          if (child.type === "bulleted_list_item") {
-            if (currentListType !== "bulleted_list_item") {
-              if (currentList.length > 0 && currentListType) {
-                result.push(renderListGroup(currentList, currentListType));
-              }
-              currentList = [];
-              currentListType = "bulleted_list_item";
-            }
-            currentList.push(child);
-          } else if (child.type === "numbered_list_item") {
-            if (currentListType !== "numbered_list_item") {
-              if (currentList.length > 0 && currentListType) {
-                result.push(renderListGroup(currentList, currentListType));
-              }
-              currentList = [];
-              currentListType = "numbered_list_item";
-            }
-            currentList.push(child);
-          } else {
-            // 리스트가 아닌 블록
-            if (currentList.length > 0 && currentListType) {
-              result.push(renderListGroup(currentList, currentListType));
-              currentList = [];
-              currentListType = null;
-            }
-            const rendered = renderBlock(child, allBlocks);
-            if (rendered) {
-              result.push(rendered);
-            }
-          }
-        }
-
-        // 마지막 리스트 처리
-        if (currentList.length > 0 && currentListType) {
-          result.push(renderListGroup(currentList, currentListType));
-        }
-
-        return result;
-      };
-
       return (
         <blockquote key={block.id} className={cx("quote")}>
-          {renderRichText(quoteBlock.richText)}
-          {children.length > 0 && (
+          {renderRichTextToReactElement(quoteBlock.richText)}
+          {childrenList.length > 0 && (
             <div className={cx("quote-children")}>
-              {renderQuoteChildren(children)}
+              {childrenList.map((child) => renderBlockByType(child, allBlocks))}
             </div>
           )}
         </blockquote>
       );
     }
-    // Code block (라이브러리로 언어별 색상 다르게 주기)
+    // 6. Code Block
     case "code": {
       const codeBlock = block as CodeBlock;
       const language = codeBlock.language || "plain text";
-      const codeText = renderRichTextPlain(codeBlock.richText);
+      const codeText = renderRichTextToPlainText(codeBlock.richText);
 
       // Notion 언어 코드를 react-syntax-highlighter가 인식할 수 있는 형식으로 변환
       const mapLanguage = (lang: string): string => {
@@ -232,7 +217,6 @@ const renderBlock = (
 
       const mappedLanguage =
         language === "plain text" ? "text" : mapLanguage(language);
-
       return (
         <div key={block.id} className={cx("code-block-wrapper")}>
           <SyntaxHighlighter
@@ -245,7 +229,6 @@ const renderBlock = (
               fontSize: "1rem",
               lineHeight: "1.5",
             }}
-            showLineNumbers={false}
           >
             {codeText}
           </SyntaxHighlighter>
@@ -255,10 +238,10 @@ const renderBlock = (
         </div>
       );
     }
-    // image block
+    // 7. Image Block
     case "image": {
       const imageBlock = block as ImageBlock;
-      const caption = renderRichTextPlain(imageBlock.caption);
+      const caption = renderRichTextToPlainText(imageBlock.caption);
       return (
         <figure key={block.id} className={cx("image-figure")}>
           <img
@@ -270,28 +253,31 @@ const renderBlock = (
         </figure>
       );
     }
-    // divider block
-    case "divider":
+    // 8. Divider Block
+    case "divider": {
       return <hr key={block.id} className={cx("divider")} />;
-    // callout block
+    }
+    // 9. Callout Block
     case "callout": {
       const calloutBlock = block as CalloutBlock;
-      const iconEmoji = calloutBlock.icon || "💡";
+      const emojiIcon = calloutBlock.icon || "💡";
       return (
         <div key={block.id} className={cx("callout")}>
-          <span className={cx("callout-icon")}>{iconEmoji}</span>
+          <span className={cx("callout-icon")}>{emojiIcon}</span>
           <div className={cx("callout-content")}>
-            {renderRichText(calloutBlock.richText)}
-            {children.length > 0 && (
+            {renderRichTextToReactElement(calloutBlock.richText)}
+            {childrenList.length > 0 && (
               <div className={cx("callout-children")}>
-                {children.map((child) => renderBlock(child, allBlocks))}
+                {childrenList.map((child) =>
+                  renderBlockByType(child, allBlocks)
+                )}
               </div>
             )}
           </div>
         </div>
       );
     }
-    // 할일 block
+    // 10. To-do Block
     case "to_do": {
       const toDoBlock = block as ToDoBlock;
       return (
@@ -308,35 +294,39 @@ const renderBlock = (
                 toDoBlock.checked ? cx("todo-text-checked") : cx("todo-text")
               }
             >
-              {renderRichText(toDoBlock.richText)}
+              {renderRichTextToReactElement(toDoBlock.richText)}
             </span>
-            {children.length > 0 && (
+            {childrenList.length > 0 && (
               <div className={cx("todo-children")}>
-                {children.map((child) => renderBlock(child, allBlocks))}
+                {childrenList.map((child) =>
+                  renderBlockByType(child, allBlocks)
+                )}
               </div>
             )}
           </div>
         </div>
       );
     }
+    // 11. Toggle Block - HTML5 details/summary 사용
     case "toggle": {
       const toggleBlock = block as ToggleBlock;
       return (
         <details key={block.id} className={cx("toggle")}>
           <summary className={cx("toggle-summary")}>
-            {renderRichText(toggleBlock.richText)}
+            {renderRichTextToReactElement(toggleBlock.richText)}
           </summary>
-          {children.length > 0 && (
+          {childrenList.length > 0 && (
             <div className={cx("toggle-children")}>
-              {children.map((child) => renderBlock(child, allBlocks))}
+              {childrenList.map((child) => renderBlockByType(child, allBlocks))}
             </div>
           )}
         </details>
       );
     }
+    // 12-1. Table Block
     case "table": {
       // table의 children은 table_row 블록들
-      const tableRows = children.filter(
+      const tableRows = childrenList.filter(
         (b) => b.type === "table_row"
       ) as TableRowBlock[];
       return (
@@ -346,7 +336,7 @@ const renderBlock = (
               <tr key={row.id}>
                 {row.cells.map((cell, cellIndex) => (
                   <td key={cellIndex} className={cx("table-cell")}>
-                    {renderRichText(cell)}
+                    {renderRichTextToReactElement(cell)}
                   </td>
                 ))}
               </tr>
@@ -355,9 +345,10 @@ const renderBlock = (
         </table>
       );
     }
+    // 12-2. Table Row Block
     case "table_row":
-      // table_row는 table의 children으로만 렌더링되므로 여기서는 처리하지 않음
       return null;
+    // 13. Equation Block
     case "equation": {
       const equationBlock = block as EquationBlock;
       return (
@@ -366,84 +357,60 @@ const renderBlock = (
         </div>
       );
     }
+    // 14. Bookmark Block
+    case "bookmark": {
+      const bookmarkBlock = block as BookmarkBlock;
+      const caption = renderRichTextToPlainText(bookmarkBlock.caption);
+      return (
+        <div key={block.id} className={cx("bookmark")}>
+          <a
+            href={bookmarkBlock.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={cx("bookmark-link")}
+          >
+            {bookmarkBlock.url}
+          </a>
+          {caption && <div className={cx("bookmark-caption")}>{caption}</div>}
+        </div>
+      );
+    }
+    // 15. Video Block
+    case "video": {
+      const videoBlock = block as VideoBlock;
+      const caption = renderRichTextToPlainText(videoBlock.caption);
+      return (
+        <figure key={block.id} className={cx("video-figure")}>
+          <video src={videoBlock.url} controls className={cx("video")}>
+            Your browser does not support the video tag.
+          </video>
+          {caption && <figcaption>{caption}</figcaption>}
+        </figure>
+      );
+    }
     default:
       return null;
   }
 };
 
-// Rich text를 plain text 문자열로 변환하는 함수 (caption 등에 사용)
-const renderRichTextPlain = (texts: RichText[]) =>
-  texts.map((text) => text.plainText).join("");
-
-// Rich text를 React 요소로 렌더링하는 함수 (굵게, 기울임 등 처리)
-const renderRichText = (texts: RichText[]) => {
-  return texts.map((text, index) => {
-    const { annotations, plainText, href } = text;
-    const style: React.CSSProperties = {};
-
-    // bold가 true일 때만 font-weight를 설정 (false일 때는 부모의 font-weight를 상속받도록)
-    if (annotations.bold) {
-      style.fontWeight = "bold";
-    }
-
-    // italic이 true일 때만 font-style을 설정
-    if (annotations.italic) {
-      style.fontStyle = "italic";
-    }
-
-    // underline 또는 strikethrough가 있을 때만 text-decoration 설정
-    if (annotations.underline) {
-      style.textDecoration = "underline";
-    } else if (annotations.strikethrough) {
-      style.textDecoration = "line-through";
-    }
-
-    let content: React.ReactNode = plainText;
-
-    if (annotations.code) {
-      content = <code className={cx("inline-code")}>{plainText}</code>;
-    }
-
-    if (href) {
-      content = (
-        <a
-          href={href}
-          target="_blank"
-          rel="noopener noreferrer"
-          className={cx("link")}
-        >
-          {content}
-        </a>
-      );
-    }
-
-    return (
-      <span key={index} style={style}>
-        {content}
-      </span>
-    );
-  });
-};
-
-// 모든 Block 배열을 HTML로 변환하는 함수
+// 모든 Block 배열 -> HTML로 변환
 export default function NotionRenderer({ blocks }: { blocks: NotionBlock[] }) {
-  // 페이지 레벨 블록만 필터링 (parent가 page_id인 것들)
+  // page의 최상위 블록만 처리 (parentType: "page")
   const topLevelBlocks = blocks.filter((block) => block.parentType === "page");
 
-  // children 블록 ID 집합 생성 (중복 렌더링 방지)
+  // 중복 렌더링 방지를 위한 children 블록 ID 집합 생성
   const childBlockIds = new Set<string>();
   blocks.forEach((block) => {
-    if (block.parentType === "block") {
-      childBlockIds.add(block.id);
-    }
+    if (block.parentType === "block") childBlockIds.add(block.id);
   });
 
-  // 리스트 그룹화를 위한 처리
+  // List 그룹화를 위한 처리
   const groupedBlocks: React.ReactNode[] = [];
   let currentList: NotionBlock[] = [];
   let currentListType: "bulleted_list_item" | "numbered_list_item" | null =
     null;
 
+  // List 렌더링 함수
   const renderList = (
     list: NotionBlock[],
     type: "bulleted_list_item" | "numbered_list_item"
@@ -451,59 +418,49 @@ export default function NotionRenderer({ blocks }: { blocks: NotionBlock[] }) {
     if (list.length === 0) return null;
     return type === "bulleted_list_item" ? (
       <ul key={`list-${list[0].id}`} className={cx("bulleted-list")}>
-        {list.map((b) => renderBlock(b, blocks))}
+        {list.map((b) => renderBlockByType(b, blocks))}
       </ul>
     ) : (
       <ol key={`list-${list[0].id}`} className={cx("numbered-list")}>
-        {list.map((b) => renderBlock(b, blocks))}
+        {list.map((b) => renderBlockByType(b, blocks))}
       </ol>
     );
   };
 
-  for (const block of topLevelBlocks) {
-    // 이미 children으로 렌더링된 블록은 건너뛰기
-    if (childBlockIds.has(block.id)) {
-      continue;
+  // 현재 리스트를 종료하고 렌더링하는 함수
+  const flushCurrentList = () => {
+    if (currentList.length > 0 && currentListType) {
+      groupedBlocks.push(renderList(currentList, currentListType));
+      currentList = [];
+      currentListType = null;
     }
+  };
 
-    if (block.type === "bulleted_list_item") {
-      if (currentListType !== "bulleted_list_item") {
-        // 이전 리스트가 있으면 렌더링
-        if (currentList.length > 0 && currentListType) {
-          groupedBlocks.push(renderList(currentList, currentListType));
-        }
-        currentList = [];
-        currentListType = "bulleted_list_item";
-      }
-      currentList.push(block);
-    } else if (block.type === "numbered_list_item") {
-      if (currentListType !== "numbered_list_item") {
-        // 이전 리스트가 있으면 렌더링
-        if (currentList.length > 0 && currentListType) {
-          groupedBlocks.push(renderList(currentList, currentListType));
-        }
-        currentList = [];
-        currentListType = "numbered_list_item";
+  // 최상위 블록을 순회하며 렌더링
+  for (const block of topLevelBlocks) {
+    // 이미 children으로 렌더링된 블록은 skip
+    if (childBlockIds.has(block.id)) continue;
+
+    const isListItem =
+      block.type === "bulleted_list_item" ||
+      block.type === "numbered_list_item";
+
+    if (isListItem) {
+      // 리스트 타입이 바뀌었으면 이전 리스트 종료
+      if (currentListType !== block.type) {
+        flushCurrentList();
+        currentListType = block.type;
       }
       currentList.push(block);
     } else {
-      // 리스트가 아닌 블록
-      if (currentList.length > 0 && currentListType) {
-        groupedBlocks.push(renderList(currentList, currentListType));
-        currentList = [];
-        currentListType = null;
-      }
-      const rendered = renderBlock(block, blocks);
-      if (rendered) {
-        groupedBlocks.push(rendered);
-      }
+      // 리스트가 아닌 블록이면 현재 리스트 종료 후 렌더링
+      flushCurrentList();
+      const rendered = renderBlockByType(block, blocks);
+      if (rendered) groupedBlocks.push(rendered);
     }
   }
 
   // 마지막 리스트 처리
-  if (currentList.length > 0 && currentListType) {
-    groupedBlocks.push(renderList(currentList, currentListType));
-  }
-
+  flushCurrentList();
   return <>{groupedBlocks}</>;
 }
