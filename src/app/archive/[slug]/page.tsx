@@ -16,7 +16,7 @@ const cx = classNames.bind(styles);
 export const revalidate = 604800; // (= 7일)
 
 // SSG: 빌드 타임) [slug]의 모든 경로를 미리 생성해 각 페이지를 미리 생성
-export async function generateStaticPaths() {
+export async function generateStaticParams() {
   const posts = await fetchNotionPostList();
 
   return posts
