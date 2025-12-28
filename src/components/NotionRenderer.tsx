@@ -25,6 +25,31 @@ import React from "react";
 
 const cx = classNames.bind(styles);
 
+// Notion 언어 코드를 react-syntax-highlighter가 인식할 수 있는 형 식으로 변환
+const mapLanguage = (lang: string): string => {
+  const langMap: Record<string, string> = {
+    "plain text": "text",
+    javascript: "javascript",
+    typescript: "typescript",
+    jsx: "jsx",
+    tsx: "tsx",
+    python: "python",
+    java: "java",
+    c: "c",
+    css: "css",
+    html: "html",
+    json: "json",
+    markdown: "markdown",
+    sql: "sql",
+    bash: "bash",
+    shell: "bash",
+    yaml: "yaml",
+    yml: "yaml",
+    powershell: "powershell",
+  };
+  return langMap[lang.toLowerCase()] || lang.toLowerCase();
+};
+
 // rich text를 plain text로 변환하는 함수
 const renderRichTextToPlainText = (texts: RichText[]) =>
   texts.map((text) => text.plainText).join("");
@@ -68,11 +93,9 @@ const renderRichTextToReactElement = (texts: RichText[]) => {
 // Block의 type에 따라 렌더링하는 함수
 const renderBlockByType = (
   block: NotionBlock,
-  allBlocks: NotionBlock[]
+  childrenMap: Map<string, NotionBlock[]>
 ): React.ReactNode => {
-  const childrenList = allBlocks.filter(
-    (b) => b.parentType === "block" && b.parentId === block.id
-  );
+  const childrenList = childrenMap.get(block.id) || [];
 
   // block의 type에 따라 렌더링
   switch (block.type) {
@@ -126,14 +149,14 @@ const renderBlockByType = (
           {bulletedChildren.length > 0 && (
             <ul className={cx("bulleted-list")}>
               {bulletedChildren.map((child) =>
-                renderBlockByType(child, allBlocks)
+                renderBlockByType(child, childrenMap)
               )}
             </ul>
           )}
           {numberedChildren.length > 0 && (
             <ol className={cx("numbered-list")}>
               {numberedChildren.map((child) =>
-                renderBlockByType(child, allBlocks)
+                renderBlockByType(child, childrenMap)
               )}
             </ol>
           )}
@@ -156,14 +179,14 @@ const renderBlockByType = (
           {numberedChildren.length > 0 && (
             <ol className={cx("numbered-list")}>
               {numberedChildren.map((child) =>
-                renderBlockByType(child, allBlocks)
+                renderBlockByType(child, childrenMap)
               )}
             </ol>
           )}
           {bulletedChildren.length > 0 && (
             <ul className={cx("bulleted-list")}>
               {bulletedChildren.map((child) =>
-                renderBlockByType(child, allBlocks)
+                renderBlockByType(child, childrenMap)
               )}
             </ul>
           )}
@@ -178,7 +201,9 @@ const renderBlockByType = (
           {renderRichTextToReactElement(quoteBlock.richText)}
           {childrenList.length > 0 && (
             <div className={cx("quote-children")}>
-              {childrenList.map((child) => renderBlockByType(child, allBlocks))}
+              {childrenList.map((child) =>
+                renderBlockByType(child, childrenMap)
+              )}
             </div>
           )}
         </blockquote>
@@ -189,32 +214,6 @@ const renderBlockByType = (
       const codeBlock = block as CodeBlock;
       const language = codeBlock.language || "plain text";
       const codeText = renderRichTextToPlainText(codeBlock.richText);
-
-      // Notion 언어 코드를 react-syntax-highlighter가 인식할 수 있는 형식으로 변환
-      const mapLanguage = (lang: string): string => {
-        const langMap: Record<string, string> = {
-          "plain text": "text",
-          javascript: "javascript",
-          typescript: "typescript",
-          jsx: "jsx",
-          tsx: "tsx",
-          python: "python",
-          java: "java",
-          c: "c",
-          css: "css",
-          html: "html",
-          json: "json",
-          markdown: "markdown",
-          sql: "sql",
-          bash: "bash",
-          shell: "bash",
-          yaml: "yaml",
-          yml: "yaml",
-          powershell: "powershell",
-        };
-        return langMap[lang.toLowerCase()] || lang.toLowerCase();
-      };
-
       const mappedLanguage =
         language === "plain text" ? "text" : mapLanguage(language);
       return (
@@ -269,7 +268,7 @@ const renderBlockByType = (
             {childrenList.length > 0 && (
               <div className={cx("callout-children")}>
                 {childrenList.map((child) =>
-                  renderBlockByType(child, allBlocks)
+                  renderBlockByType(child, childrenMap)
                 )}
               </div>
             )}
@@ -299,7 +298,7 @@ const renderBlockByType = (
             {childrenList.length > 0 && (
               <div className={cx("todo-children")}>
                 {childrenList.map((child) =>
-                  renderBlockByType(child, allBlocks)
+                  renderBlockByType(child, childrenMap)
                 )}
               </div>
             )}
@@ -317,7 +316,9 @@ const renderBlockByType = (
           </summary>
           {childrenList.length > 0 && (
             <div className={cx("toggle-children")}>
-              {childrenList.map((child) => renderBlockByType(child, allBlocks))}
+              {childrenList.map((child) =>
+                renderBlockByType(child, childrenMap)
+              )}
             </div>
           )}
         </details>
@@ -404,6 +405,15 @@ export default function NotionRenderer({ blocks }: { blocks: NotionBlock[] }) {
     if (block.parentType === "block") childBlockIds.add(block.id);
   });
 
+  // 성능 최적화: children을 Map으로 미리 구성 (O(1) 조회)
+  const childrenMap = new Map<string, NotionBlock[]>();
+  blocks.forEach((block) => {
+    if (block.parentType === "block" && block.parentId) {
+      const existing = childrenMap.get(block.parentId) || [];
+      childrenMap.set(block.parentId, [...existing, block]);
+    }
+  });
+
   // List 그룹화를 위한 처리
   const groupedBlocks: React.ReactNode[] = [];
   let currentList: NotionBlock[] = [];
@@ -418,11 +428,11 @@ export default function NotionRenderer({ blocks }: { blocks: NotionBlock[] }) {
     if (list.length === 0) return null;
     return type === "bulleted_list_item" ? (
       <ul key={`list-${list[0].id}`} className={cx("bulleted-list")}>
-        {list.map((b) => renderBlockByType(b, blocks))}
+        {list.map((b) => renderBlockByType(b, childrenMap))}
       </ul>
     ) : (
       <ol key={`list-${list[0].id}`} className={cx("numbered-list")}>
-        {list.map((b) => renderBlockByType(b, blocks))}
+        {list.map((b) => renderBlockByType(b, childrenMap))}
       </ol>
     );
   };
@@ -455,7 +465,7 @@ export default function NotionRenderer({ blocks }: { blocks: NotionBlock[] }) {
     } else {
       // 리스트가 아닌 블록이면 현재 리스트 종료 후 렌더링
       flushCurrentList();
-      const rendered = renderBlockByType(block, blocks);
+      const rendered = renderBlockByType(block, childrenMap);
       if (rendered) groupedBlocks.push(rendered);
     }
   }
