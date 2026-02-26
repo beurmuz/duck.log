@@ -1,52 +1,59 @@
 .wrap-postitem {
-  /* border: 1px gray solid; */
-  background-color: rgb(242, 242, 242);
-  padding: 1rem 0.8rem;
-  border-radius: 0.5rem;
+  background-color: #fff;
+  padding: 1.5rem;
+  border-radius: 1.2rem;
+  border: 1px solid #eee;
   width: 100%;
-  margin-bottom: 20px;
-  transition: transform 0.3s ease-in-out, background-color 0.3s ease;
-  will-change: transform;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .wrap-postitem:hover {
-  transform: scale(1.01);
-  background-color: rgb(251, 231, 77);
+  transform: translateY(-8px);
+  border-color: #000;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.05);
   cursor: pointer;
 }
 
 .post-title {
-  font-size: 1rem;
-  font-weight: 400;
-  padding-bottom: 0.7rem;
-  line-height: 1.5rem;
-
-  /* 띄어쓰기와 상관없이 자동으로 다음 줄로 넘어가도록 하기 */
-  word-break: break-all;
+  font-size: 1.2rem;
+  /* Reduced from 1.4rem */
+  font-weight: 700;
+  line-height: 1.4;
+  margin-bottom: 1rem;
+  flex: 1;
+  word-break: keep-all;
 }
 
 .wrap-post-info {
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  /* margin: auto; */
-
-  .wrap-categories {
-    display: flex;
-    flex-direction: row;
-    gap: 0.5rem;
-  }
+  align-items: center;
+  gap: 0.8rem;
+  margin-top: auto;
 }
 
 .post-date {
-  font-size: 0.9rem;
-  padding: 0.2rem;
+  font-size: 0.85rem;
+  color: #999;
+}
+
+.wrap-categories {
+  display: flex;
+  gap: 0.3rem;
 }
 
 .post-category {
-  font-size: 0.77rem;
-  color: white;
-  background-color: rgb(124, 124, 124);
-  border-radius: 0.2rem;
-  padding: 0.3rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  color: #fff;
+  background-color: #000;
+  border-radius: 2rem;
+  padding: 0.3rem 0.8rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
 }

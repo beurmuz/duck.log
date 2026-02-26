@@ -79,9 +79,10 @@ async function fetchBlockChildrens(
 async function fetchAllBlocks(pageId: string): Promise<BlockObjectResponse[]> {
   const allBlocks: BlockObjectResponse[] = [];
   const queue: string[] = [pageId];
+  let front = 0; // 큐의 앞 인덱스 (shift() 대신 인덱스로 O(1) 접근)
 
-  while (queue.length > 0) {
-    const currentBlockId = queue.shift()!;
+  while (front < queue.length) {
+    const currentBlockId = queue[front++]; // 인덱스로 접근하여 O(1)
     const children = await fetchBlockChildrens(currentBlockId); // 가져오기
     allBlocks.push(...children); // 저장하기
 

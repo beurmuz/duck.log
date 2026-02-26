@@ -4,6 +4,7 @@
 .env.local
 
 src/app/shorts/
+src/app/resume/
 
 # dependencies
 /node_modules

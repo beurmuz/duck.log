@@ -24,26 +24,41 @@
 
     .line {
       padding: 0 0.5rem;
-      color: rgb(100, 100, 100);
+      /* color: rgb(100, 100, 100); */
     }
 
     .site-name {
       font-size: 1rem;
       font-weight: 500;
+      position: relative;
+      margin-left: 1rem;
+      padding-bottom: 2px;
+      transition: color 0.3s ease;
+      color: rgb(100, 100, 100);
+
+      &::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background-color: #000;
+        transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      &:hover,
+      &.active {
+        color: #000;
+
+        &::after {
+          width: 100%;
+        }
+      }
+
+      &.active {
+        font-weight: 700;
+      }
     }
   }
 }
-
-.active {
-  background-color: rgb(251, 231, 77);
-}
-
-/* .site-title:hover {
-  text-decoration: underline;
-  color: rgb(100, 100, 100);
-}
-
-.site-name:hover {
-  text-decoration: underline;
-  color: rgb(100, 100, 100);
-} */

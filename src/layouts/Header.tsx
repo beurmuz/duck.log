@@ -26,7 +26,7 @@ const Header = () => {
           const isActive = item.matchPaths.includes(pathname);
           return (
             <li key={item.href}>
-              {index > 0 && <span className={cx("line")}>|</span>}
+              {/* {index > 0 && <span className={cx("line")}>|</span>} */}
               <Link
                 href={item.href}
                 className={cx("site-name", { active: isActive })}

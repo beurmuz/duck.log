@@ -4,6 +4,8 @@ import ArticleWrap from "@/layouts/ArticleWrap";
 import { fetchNotionPostList } from "@/lib/notion/extracts";
 import Link from "next/link";
 
+import { formatDate } from "@/lib/dateUtils";
+
 const cx = classNames.bind(styles);
 
 const mainPage = async () => {
@@ -14,25 +16,31 @@ const mainPage = async () => {
     <section className={cx("wrap-page")}>
       <ArticleWrap>
         <h2 className={cx("info")}>
-          {/* <span className={cx("info-part", "info-part-1")}>I&apos;m a</span> */}
-          <span className={cx("info-part", "info-part-2")}>
+          <span className={cx("info-part", "info-part-1")}>
             Frontend Engineer,
           </span>
-          <span className={cx("info-part", "info-part-3")}>
+          <span className={cx("info-part", "info-part-2")}>
             Jang Seo-Ryeong.
           </span>
         </h2>
       </ArticleWrap>
       {latestPost && (
-        <ArticleWrap className={cx("latest-post-wrapper")}>
-          <h2 className={cx("article-title")}>Latest Post</h2>
+        <section className={cx("latest-post-section")}>
+          <span className={cx("section-label")}>LATEST POST</span>
           <Link
             href={`/archive/${latestPost.slug ?? latestPost.id}`}
-            className={cx("post-link")}
+            className={cx("post-card")}
           >
-            <h3 className={cx("post-title")}>{latestPost.title} →</h3>
+            <div className={cx("post-meta")}>
+              {latestPost.categories?.[0] && (
+                <span className={cx("category-tag")}>{latestPost.categories[0]}</span>
+              )}
+              <span className={cx("post-date")}>{formatDate(latestPost.createdDate)}</span>
+            </div>
+            <h3 className={cx("post-card-title")}>{latestPost.title}</h3>
+            <span className={cx("read-more")}>Read Post →</span>
           </Link>
-        </ArticleWrap>
+        </section>
       )}
     </section>
   );

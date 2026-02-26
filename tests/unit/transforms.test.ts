@@ -15,7 +15,7 @@ import type {
 function createMockRichTextItem(
   plainText: string,
   annotations = {},
-  href: string | null = null
+  href: string | null = null,
 ) {
   return {
     type: "text" as const,
@@ -57,7 +57,7 @@ function createBaseBlock(id: string, type: string, hasChildren = false) {
 function createHeadingBlock(
   id: string,
   level: 1 | 2 | 3,
-  text: string
+  text: string,
 ): BlockObjectResponse {
   const headingKey = `heading_${level}` as const;
   return {
@@ -81,7 +81,7 @@ function createCodeBlock(
   id: string,
   code: string,
   language: string | null = "javascript",
-  caption: string = ""
+  caption: string = "",
 ): BlockObjectResponse {
   return {
     ...createBaseBlock(id, "code"),
@@ -97,7 +97,7 @@ function createImageBlock(
   id: string,
   url: string,
   type: "file" | "external" = "external",
-  caption: string = ""
+  caption: string = "",
 ): BlockObjectResponse {
   return {
     ...createBaseBlock(id, "image"),
@@ -119,7 +119,7 @@ function createImageBlock(
 function createVideoBlock(
   id: string,
   url: string,
-  type: "file" | "external" = "external"
+  type: "file" | "external" = "external",
 ): BlockObjectResponse {
   return {
     ...createBaseBlock(id, "video"),
@@ -141,7 +141,7 @@ function createVideoBlock(
 function createCalloutBlock(
   id: string,
   text: string,
-  icon: string | null = "💡"
+  icon: string | null = "💡",
 ): BlockObjectResponse {
   return {
     ...createBaseBlock(id, "callout"),
@@ -160,7 +160,7 @@ function createCalloutBlock(
 function createToDoBlock(
   id: string,
   text: string,
-  checked: boolean | null = false
+  checked: boolean | null = false,
 ): BlockObjectResponse {
   return {
     ...createBaseBlock(id, "to_do"),
@@ -174,7 +174,7 @@ function createToDoBlock(
 function createBookmarkBlock(
   id: string,
   url: string,
-  caption: string = ""
+  caption: string = "",
 ): BlockObjectResponse {
   return {
     ...createBaseBlock(id, "bookmark"),
@@ -269,7 +269,7 @@ describe("transformBlocks", () => {
         const result = transformBlocks([block]);
         expect(result[0].parentType).toBe(expectedType);
         expect(result[0].parentId).toBe(expectedId);
-      }
+      },
     );
 
     it("parent가 없으면 null을 반환해야 함", () => {
@@ -313,7 +313,7 @@ describe("transformBlocks", () => {
       const block = createHeadingBlock(
         `block-${level}`,
         level as 1 | 2 | 3,
-        text
+        text,
       );
       const result = transformBlocks([block]);
       const headingBlock = result[0] as HeadingBlock;
@@ -348,7 +348,7 @@ describe("transformBlocks", () => {
         "block-5",
         "console.log('hello')",
         "javascript",
-        "코드 설명"
+        "코드 설명",
       );
       const result = transformBlocks([block]);
       const codeBlock = result[0] as CodeBlock;
@@ -379,7 +379,7 @@ describe("transformBlocks", () => {
         `block-${type}`,
         url,
         type as "file" | "external",
-        caption
+        caption,
       );
       const result = transformBlocks([block]);
       const imageBlock = result[0] as ImageBlock;
@@ -452,7 +452,7 @@ describe("transformBlocks", () => {
       const block = createBookmarkBlock(
         "block-15",
         "https://example.com",
-        "북마크 설명"
+        "북마크 설명",
       );
       const result = transformBlocks([block]);
       const bookmarkBlock = result[0] as BookmarkBlock;
@@ -473,7 +473,7 @@ describe("transformBlocks", () => {
       const block = createVideoBlock(
         `block-${type}`,
         url,
-        type as "file" | "external"
+        type as "file" | "external",
       );
       const result = transformBlocks([block]);
 
