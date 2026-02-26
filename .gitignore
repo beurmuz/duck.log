@@ -3,10 +3,7 @@
 .env
 .env.local
 
-src/app/shorts/
-src/app/resume/
-
-# dependencies
+# production
 /node_modules
 /.pnp
 .pnp.js
