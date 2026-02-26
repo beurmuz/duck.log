@@ -6,7 +6,7 @@ import type {
   CheckboxProperty,
   TextProperty,
 } from "./types";
-import { notion, DATA_SOURCE_ID } from "./client";
+import { notion, DATA_SOURCE_ID } from "./notion-client";
 import type { NotionPostList } from "@/models/post";
 
 // title 추출

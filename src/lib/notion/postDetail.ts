@@ -1,4 +1,4 @@
-import { notion, DATA_SOURCE_ID } from "./client";
+import { notion, DATA_SOURCE_ID } from "./notion-client";
 import type {
   BlockObjectResponse,
   PartialBlockObjectResponse,
