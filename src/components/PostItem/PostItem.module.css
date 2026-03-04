@@ -48,8 +48,8 @@
   font-size: 0.75rem;
   font-weight: 500;
   text-transform: uppercase;
-  color: #fff;
-  background-color: #000;
+  color: var(--category-text, #fff);
+  background-color: var(--category-bg, #000);
   border-radius: 2rem;
   padding: 0.3rem 0.8rem;
   display: inline-flex;

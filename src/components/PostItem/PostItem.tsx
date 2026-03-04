@@ -2,6 +2,7 @@ import classNames from "classnames/bind";
 import styles from "./PostItem.module.css";
 import { ReactNode } from "react";
 import Link from "next/link";
+import { CATEGORY_COLOR_MAP } from "@/constants/category";
 
 const cx = classNames.bind(styles);
 
@@ -24,11 +25,26 @@ export default function PostItem({
 
       <div className={cx("wrap-post-info")}>
         <ul className={cx("wrap-categories")}>
-          {postCategories.map((category, id) => (
-            <li className={cx("post-category")} key={postUrl + postDate + id}>
-              {category}
-            </li>
-          ))}
+          {postCategories.map((category, id) => {
+            const colors = CATEGORY_COLOR_MAP[category.toLowerCase()] || {
+              bg: "#000",
+              text: "#fff",
+            };
+            return (
+              <li
+                className={cx("post-category")}
+                key={postUrl + postDate + id}
+                style={
+                  {
+                    "--category-bg": colors.bg,
+                    "--category-text": colors.text,
+                  } as React.CSSProperties
+                }
+              >
+                {category}
+              </li>
+            );
+          })}
         </ul>
         <span className={cx("post-date")}>{postDate}</span>
       </div>

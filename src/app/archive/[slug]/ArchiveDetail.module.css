@@ -19,8 +19,8 @@
 
 .post-category {
   font-size: 1rem;
-  color: white;
-  background-color: rgb(221, 180, 0);
+  color: var(--category-text, #fff);
+  background-color: var(--category-bg, #000);
   border-radius: 1rem;
   padding: 0.35rem 0.6rem 0.25rem 0.6rem;
   margin: 0;

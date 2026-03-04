@@ -6,6 +6,8 @@ import Link from "next/link";
 
 import { formatDate } from "@/lib/dateUtils";
 
+import { CATEGORY_COLOR_MAP } from "@/constants/category";
+
 const cx = classNames.bind(styles);
 
 const mainPage = async () => {
@@ -32,10 +34,29 @@ const mainPage = async () => {
             className={cx("post-card")}
           >
             <div className={cx("post-meta")}>
-              {latestPost.categories?.[0] && (
-                <span className={cx("category-tag")}>{latestPost.categories[0]}</span>
-              )}
-              <span className={cx("post-date")}>{formatDate(latestPost.createdDate)}</span>
+              {latestPost.categories?.[0] && (() => {
+                const category = latestPost.categories[0];
+                const colors = CATEGORY_COLOR_MAP[category.toLowerCase()] || {
+                  bg: "#000",
+                  text: "#fff",
+                };
+                return (
+                  <span
+                    className={cx("category-tag")}
+                    style={
+                      {
+                        "--category-bg": colors.bg,
+                        "--category-text": colors.text,
+                      } as React.CSSProperties
+                    }
+                  >
+                    {category}
+                  </span>
+                );
+              })()}
+              <span className={cx("post-date")}>
+                {formatDate(latestPost.createdDate)}
+              </span>
             </div>
             <h3 className={cx("post-card-title")}>{latestPost.title}</h3>
             <span className={cx("read-more")}>Read Post →</span>

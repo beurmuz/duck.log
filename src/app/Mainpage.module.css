@@ -91,8 +91,8 @@
 .category-tag {
   font-size: 0.75rem;
   font-weight: 600;
-  background: #000;
-  color: #fff;
+  background-color: var(--category-bg, #000);
+  color: var(--category-text, #fff);
   padding: 0.3rem 0.8rem;
   border-radius: 2rem;
 }

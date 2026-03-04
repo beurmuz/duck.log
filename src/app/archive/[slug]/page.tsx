@@ -8,6 +8,8 @@ import { formatDate } from "@/lib/dateUtils";
 import classNames from "classnames/bind";
 import styles from "./ArchiveDetail.module.css";
 
+import { CATEGORY_COLOR_MAP } from "@/constants/category";
+
 const cx = classNames.bind(styles);
 
 // 빌드 시 모든 포스트 페이지를 생성 (SSG)하되, 7일마다 포스트 페이지를 자동으로 재검증(ISR)하는 형태
@@ -38,11 +40,26 @@ export default async function ArchiveDetailPage({
         <header className={cx("wrap-header")}>
           {postDetail.categories.length > 0 && (
             <ul className={cx("post-categories")}>
-              {postDetail.categories.map((category) => (
-                <li className={cx("post-category")} key={category}>
-                  {category}
-                </li>
-              ))}
+              {postDetail.categories.map((category) => {
+                const colors = CATEGORY_COLOR_MAP[category.toLowerCase()] || {
+                  bg: "#000",
+                  text: "#fff",
+                };
+                return (
+                  <li
+                    className={cx("post-category")}
+                    key={category}
+                    style={
+                      {
+                        "--category-bg": colors.bg,
+                        "--category-text": colors.text,
+                      } as React.CSSProperties
+                    }
+                  >
+                    {category}
+                  </li>
+                );
+              })}
             </ul>
           )}
           <h1 className={cx("post-title")}>{postDetail.title}</h1>
