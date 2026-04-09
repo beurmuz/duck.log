@@ -20,7 +20,7 @@ const Company = () => {
       <div className={cx("career-info")}>
         <h3 className={cx("job-title")}>Frontend Engineer</h3>
         <div className={cx("company-meta")}>
-          <span className={cx("company-name")}>(? - ing) 제 커리어의 시작점이 되어주세요!</span>
+          <span className={cx("company-name")}>제 커리어의 시작점이 되어주세요!</span>
           {/* <span className={cx("company-name")}>회사명,</span>
           <span className={cx("company-term")}>(2026 - 구직중)</span> */}
           {/* <ul className={cx("company-todo-list")}>
