@@ -1,13 +1,9 @@
 import classNames from "classnames/bind";
 import styles from "./Mainpage.module.css";
-import ArticleWrap from "@/layouts/ArticleWrap";
 import { fetchNotionPostList } from "@/lib/notion/extracts";
 import Link from "next/link";
-
 import { formatDate } from "@/lib/dateUtils";
-
-import { CATEGORY_COLOR_MAP } from "@/constants/category";
-import Introduce from "@/components/UI/Introduce";
+import SectionTitle from "@/components/UI/SectionTitle";
 
 const cx = classNames.bind(styles);
 
@@ -17,43 +13,23 @@ const mainPage = async () => {
 
   return (
     <section className={cx("wrap-page")}>
-      <ArticleWrap>
-        <Introduce />
-      </ArticleWrap>
+      <section className={cx("introduce-section")}>
+
+      </section>
       {latestPost && (
         <section className={cx("latest-post-section")}>
-          <span className={cx("section-label")}>LATEST POST</span>
+          <SectionTitle title="LATEST POST" />
           <Link
             href={`/archive/${latestPost.slug ?? latestPost.id}`}
             className={cx("post-card")}
           >
-            <div className={cx("post-meta")}>
-              {latestPost.categories?.[0] && (() => {
-                const category = latestPost.categories[0];
-                const colors = CATEGORY_COLOR_MAP[category.toLowerCase()] || {
-                  bg: "#000",
-                  text: "#fff",
-                };
-                return (
-                  <span
-                    className={cx("category-tag")}
-                    style={
-                      {
-                        "--category-bg": colors.bg,
-                        "--category-text": colors.text,
-                      } as React.CSSProperties
-                    }
-                  >
-                    {category}
-                  </span>
-                );
-              })()}
+            <h3 className={cx("post-card-title")}>{latestPost.title}</h3>
+            <div className={cx("post-footer")}>
               <span className={cx("post-date")}>
                 {formatDate(latestPost.createdDate)}
               </span>
+              <span className={cx("read-more")}>Read Post →</span>
             </div>
-            <h3 className={cx("post-card-title")}>{latestPost.title}</h3>
-            <span className={cx("read-more")}>Read Post →</span>
           </Link>
         </section>
       )}

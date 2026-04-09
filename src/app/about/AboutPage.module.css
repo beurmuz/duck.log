@@ -1,3 +1,150 @@
 .wrap-page {
   padding: 2rem 0;
 }
+
+.introduce-section {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 2rem;
+}
+
+.introduce-name {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.introduce-job {
+  font-size: 1.1rem;
+  font-weight: 300;
+  color: #888888;
+  margin-left: 0.5rem;
+}
+
+.introduce-aboutme {
+  padding: 1rem 0;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #505050
+}
+
+.introduce-contact {
+  display: flex;
+  gap: 0.7rem;
+  font-size: 1rem;
+}
+
+.contact-github {
+  color: #888888;
+  text-decoration: 1px solid #b0b0b0 underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+.contact-email {
+  color: #888888;
+  text-decoration: 1px solid #b0b0b0 underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+
+/* 경력 */
+.career-section {
+  padding: 2rem 0;
+}
+
+.career-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.career-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.career-logo {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: #f1f1f1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 100%;
+  border: 1px solid #777777
+}
+
+.logo-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.career-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding-top: 0.2rem;
+}
+
+.job-title {
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.company-meta {
+  font-size: 0.95rem;
+  color: #777777;
+  padding: 0.2rem 0;
+}
+
+.company-name {
+  font-weight: 400;
+  padding-right: 0.3rem;
+}
+
+.company-term {
+  font-weight: 400;
+}
+
+.company-todo-list {
+  padding: 0.5rem 0;
+  margin-left: 1rem;
+  list-style: circle;
+}
+
+.company-todo,
+.contact-item {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #505050;
+}
+
+/* 프로젝트 */
+.project-section {
+  padding: 2rem 0;
+}
+
+.project-list {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+
+.project-item {
+  background-color: #f1f1f1;
+  height: 10rem;
+  border-radius: 1rem;
+}
+
+@media (max-width: 768px) {
+  .project-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
