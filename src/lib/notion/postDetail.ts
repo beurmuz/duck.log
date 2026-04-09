@@ -9,6 +9,7 @@ import {
   extractTitle,
   extractCategories,
   extractDateValue,
+  extractTextValue,
   NotionQueryResponse,
 } from "./extracts";
 import { transformBlocks } from "./transforms";
@@ -109,7 +110,7 @@ export async function fetchNotionPostDetail(slug: string): Promise<NotionPost> {
   const title = extractTitle(properties) || "Untitled";
   const categories = extractCategories(properties);
   const createdDate = extractDateValue(properties, "createdDate");
-  const updatedDate = extractDateValue(properties, "updatedDate");
+  const icons = extractTextValue(properties, "icons");
   const transformedBlocks = transformBlocks(blocks);
 
   return {
@@ -117,7 +118,7 @@ export async function fetchNotionPostDetail(slug: string): Promise<NotionPost> {
     title,
     categories,
     createdDate,
-    updatedDate,
+    icons,
     blocks: transformedBlocks,
   };
 }

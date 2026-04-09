@@ -20,7 +20,7 @@ export type MultiSelectProperty = PropertyMap & {
   multi_select: Array<{ name: string }>;
 };
 
-// date field - createdDate, updatedDate는 둘다 date로 설정
+// date field - createdDate는 date로 설정
 export type DateProperty = PropertyValue & {
   type: "date";
   date: { start: string | null } | null;

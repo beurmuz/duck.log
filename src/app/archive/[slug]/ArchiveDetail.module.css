@@ -5,6 +5,17 @@
 .wrap-header {
   display: flex;
   flex-direction: column;
+  border-radius: 1rem;
+  background-color: rgb(251, 249, 239);
+  padding: 2rem 1.2rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.post-icon {
+  font-size: 2.5rem;
+  display: inline-block;
+  margin-bottom: 1rem;
 }
 
 .post-categories {
@@ -15,6 +26,7 @@
   /* margin-bottom: 0.5rem; */
   list-style: none;
   padding: 0;
+  margin: 0;
 }
 
 .post-category {
@@ -30,7 +42,14 @@
 .post-title {
   font-size: 1.7rem;
   font-weight: 700;
-  padding: 0.8rem 0 0.5rem 0;
+  padding: 0 0 1rem 0;
+}
+
+.post-meta {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1rem;
 }
 
 .post-date {
@@ -39,7 +58,7 @@
 }
 
 .wrap-notioncontent {
-  padding: 1rem 0;
+  padding: 1rem 1.2rem;
 }
 
 .post-footer {

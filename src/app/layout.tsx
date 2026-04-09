@@ -10,35 +10,9 @@ import Header from "@/layouts/Header";
 import Footer from "@/layouts/Footer";
 
 const pretendard = localFont({
-  src: [
-    {
-      path: "./fonts/Pretendard-Regular.woff",
-      weight: "400",
-      style: "normal",
-    },
-    {
-      path: "./fonts/Pretendard-Medium.woff",
-      weight: "500",
-      style: "normal",
-    },
-    {
-      path: "./fonts/Pretendard-SemiBold.woff",
-      weight: "600",
-      style: "normal",
-    },
-    {
-      path: "./fonts/Pretendard-Bold.woff",
-      weight: "700",
-      style: "normal",
-    },
-    {
-      path: "./fonts/Pretendard-ExtraBold.woff",
-      weight: "800",
-      style: "normal",
-    },
-  ],
-  variable: "--font-pretendard",
-  display: "swap",
+  src: "./fonts/PretendardVariable.woff2", // 방금 넣어두신 파일 경로
+  display: "swap", // 폰트가 로딩되는 동안 기본 폰트를 보여주다 자연스럽게 갈아끼움(깜빡임 방지)
+  weight: "200 900", // 가변 폰트이므로 이 사이의 모든 굵기를 자동으로 지원함
 });
 
 export const metadata: Metadata = {
@@ -60,7 +34,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ko" suppressHydrationWarning className={pretendard.variable}>
+    <html lang="ko" suppressHydrationWarning className={pretendard.className}>
       <body className="wrap-pages vsc-initialized">
         {GA_TRACKING_ID && (
           <>

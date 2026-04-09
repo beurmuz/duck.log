@@ -9,7 +9,7 @@ const cx = classNames.bind(styles);
 
 const navItems = [
   { href: "/archive", label: "archive", matchPaths: ["/archive"] },
-  { href: "/about", label: "about", matchPaths: ["/about"] },
+  // { href: "/about", label: "about", matchPaths: ["/about"] },
   // { href: "/resume", label: "resume", matchPaths: ["/resume"] },
 ];
 

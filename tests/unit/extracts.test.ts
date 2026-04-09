@@ -86,16 +86,6 @@ describe("extractDateValue", () => {
     expect(extractDateValue(properties, "createdDate")).toBe("2025-12-30");
   });
 
-  it("updatedDate를 올바르게 추출해야 함", () => {
-    const properties: PropertyMap = {
-      updatedDate: {
-        type: "date",
-        date: { start: "2025-12-31" },
-      },
-    };
-    expect(extractDateValue(properties, "updatedDate")).toBe("2025-12-31");
-  });
-
   it("date 필드가 없으면 null을 반환해야 함", () => {
     const properties: PropertyMap = {};
     expect(extractDateValue(properties, "createdDate")).toBeNull();

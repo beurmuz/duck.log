@@ -26,10 +26,10 @@ export function extractCategories(properties: PropertyMap): string[] {
   return categories?.multi_select?.map((category) => category.name) ?? [];
 }
 
-// createdDate, updatedDate 추출
+// createdDate 추출
 export function extractDateValue(
   properties: PropertyMap,
-  fieldName: "createdDate" | "updatedDate"
+  fieldName: "createdDate"
 ): string | null {
   const date = properties?.[fieldName] as DateProperty | undefined;
   if (!date || date.type !== "date") return null;
@@ -42,7 +42,7 @@ export function extractCheckboxValue(properties: PropertyMap): boolean {
   return checkbox?.checkbox ?? false;
 }
 
-// slug 추출
+// slug, icons 추출
 export function extractTextValue(
   properties: PropertyMap,
   fieldName: string
@@ -82,9 +82,9 @@ export async function fetchNotionPostList(options?: {
       title: extractTitle(properties),
       categories: extractCategories(properties),
       createdDate: extractDateValue(properties, "createdDate"),
-      updatedDate: extractDateValue(properties, "updatedDate"),
       published: extractCheckboxValue(properties),
       slug: extractTextValue(properties, "slug"),
+      icons: extractTextValue(properties, "icons"),
     };
   });
 

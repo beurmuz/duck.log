@@ -2,8 +2,8 @@
 
 import classNames from "classnames/bind";
 import styles from "./AboutPage.module.css";
-import Image from "next/image";
 import SectionTitle from "@/components/UI/SectionTitle";
+import Company from "@/components/UI/Company";
 
 const cx = classNames.bind(styles);
 
@@ -35,27 +35,7 @@ const AboutPage = () => {
         <SectionTitle title="CAREER" />
         <ul className={cx("career-list")}>
           {/* 첫번째 회사 */}
-          <div className={cx("career-item")}>
-            <span className={cx("career-logo")}>
-              <Image
-                src="/company.png"
-                alt="Company Logo"
-                width={40}
-                height={40}
-                className={cx("logo-image")}
-              />
-            </span>
-            <div className={cx("career-info")}>
-              <h3 className={cx("job-title")}>Frontend Engineer</h3>
-              <div className={cx("company-meta")}>
-                <span className={cx("company-name")}>회사명,</span>
-                <span className={cx("company-term")}>(2026 - 구직중)</span>
-                <ul className={cx("company-todo-list")}>
-                  <li className={cx("company-todo")}>제 커리어의 시작점이 되어주세요!</li>
-                </ul>
-              </div>
-            </div>
-          </div>
+          <Company />
         </ul>
       </article>
 

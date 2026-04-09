@@ -8,9 +8,9 @@ export interface NotionPostList {
   title: string;
   categories: string[];
   createdDate: string | null;
-  updatedDate: string | null;
   published: boolean;
   slug: string | null;
+  icons: string | null;
 }
 
 // Post Model (포스트 1개의 상세 정보)
@@ -19,6 +19,6 @@ export interface NotionPost {
   title: string;
   categories: string[];
   createdDate: string | null;
-  updatedDate: string | null;
+  icons: string | null;
   blocks: NotionBlock[]; // 각 post의 Block들을 저장
 }

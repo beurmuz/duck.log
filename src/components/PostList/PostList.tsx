@@ -32,6 +32,7 @@ const PostList = async () => {
             postTitle={post.title || "Untitled"}
             postDate={formatDate(post.createdDate)}
             postCategories={post.categories}
+            postIcon={post.icons}
           />
         ))}
       </section>

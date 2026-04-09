@@ -11,14 +11,17 @@ export default function PostItem({
   postTitle,
   postDate,
   postCategories,
+  postIcon
 }: {
   postUrl: string; // `/archive/${slug || id}`
   postTitle: string;
   postDate: string;
   postCategories: Array<string>;
+  postIcon: string | null;
 }): ReactNode {
   return (
     <article className={cx("wrap-postitem")}>
+      <span className={cx("post-icon")}>{postIcon}</span>
       <h2 className={cx("post-title")}>
         <Link href={postUrl}>{postTitle}</Link>
       </h2>

@@ -38,33 +38,41 @@ export default async function ArchiveDetailPage({
     return (
       <section className={cx("wrap-page")}>
         <header className={cx("wrap-header")}>
-          {postDetail.categories.length > 0 && (
-            <ul className={cx("post-categories")}>
-              {postDetail.categories.map((category) => {
-                const colors = CATEGORY_COLOR_MAP[category.toLowerCase()] || {
-                  bg: "#000",
-                  text: "#fff",
-                };
-                return (
-                  <li
-                    className={cx("post-category")}
-                    key={category}
-                    style={
-                      {
-                        "--category-bg": colors.bg,
-                        "--category-text": colors.text,
-                      } as React.CSSProperties
-                    }
-                  >
-                    {category}
-                  </li>
-                );
-              })}
-            </ul>
+          {postDetail.icons && (
+            <span className={cx("post-icon")}>{postDetail.icons}</span>
           )}
+
           <h1 className={cx("post-title")}>{postDetail.title}</h1>
-          <div className={cx("post-date")}>
-            {formatDate(postDetail.updatedDate)} updated
+
+          <div className={cx("post-meta")}>
+            <div className={cx("post-date")}>
+              {formatDate(postDetail.createdDate)}
+            </div>
+
+            {postDetail.categories.length > 0 && (
+              <ul className={cx("post-categories")}>
+                {postDetail.categories.map((category) => {
+                  const colors = CATEGORY_COLOR_MAP[category.toLowerCase()] || {
+                    bg: "#000",
+                    text: "#fff",
+                  };
+                  return (
+                    <li
+                      className={cx("post-category")}
+                      key={category}
+                      style={
+                        {
+                          "--category-bg": colors.bg,
+                          "--category-text": colors.text,
+                        } as React.CSSProperties
+                      }
+                    >
+                      {category}
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
           </div>
         </header>
 
