@@ -1,10 +1,10 @@
 .wrap-footer {
-  font-family: Pretendard;
+  font-family: var(--font-pretendard), sans-serif;
   height: 3rem;
   padding: 1rem 0;
 
   .item-copyright {
     font-size: 0.9rem;
-    color: rgb(100, 100, 100);
+    color: #777777;
   }
 }

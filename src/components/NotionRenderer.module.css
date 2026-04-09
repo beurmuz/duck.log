@@ -1,14 +1,16 @@
 /* Heading 스타일 */
 .heading {
   font-weight: 600;
-  font-family: Pretendard, -apple-system, BlinkMacSystemFont, system-ui,
+  font-family: var(--font-pretendard), -apple-system, BlinkMacSystemFont, system-ui,
     sans-serif;
   font-style: normal;
   line-height: 1.4;
 }
+
 .heading1 {
   font-size: 1.5rem;
   padding: 1.3rem 0 0.5rem 0;
+  ;
 }
 
 .heading2 {
@@ -25,7 +27,9 @@
 .paragraph {
   font-size: 1rem;
   padding: 0.5rem 0;
-  line-height: 1.4;
+  line-height: 1.5;
+  font-weight: 400;
+  color: #505050
 }
 
 /* 목록 스타일 */
@@ -159,7 +163,7 @@
   font-size: 1rem;
 }
 
-.callout-content > span {
+.callout-content>span {
   line-height: 1.2;
   display: inline;
 }
@@ -198,7 +202,7 @@
   font-size: 1rem;
 }
 
-.todo-content > span {
+.todo-content>span {
   line-height: 1;
   display: inline;
 }
@@ -329,7 +333,7 @@
     line-height: 1.6;
   }
 
-  .callout-content > span {
+  .callout-content>span {
     line-height: 1.6;
   }
 
@@ -337,7 +341,7 @@
     line-height: 1.6;
   }
 
-  .todo-content > span {
+  .todo-content>span {
     line-height: 1.6;
   }
 }

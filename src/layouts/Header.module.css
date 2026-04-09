@@ -1,5 +1,5 @@
 .wrap-nav {
-  font-family: Pretendard;
+  font-family: var(--font-pretendard), sans-serif;
   width: 100%;
   /* border-bottom: 1px solid rgb(208, 208, 208); */
   display: flex;

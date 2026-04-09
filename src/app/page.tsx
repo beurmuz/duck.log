@@ -7,6 +7,7 @@ import Link from "next/link";
 import { formatDate } from "@/lib/dateUtils";
 
 import { CATEGORY_COLOR_MAP } from "@/constants/category";
+import Introduce from "@/components/UI/Introduce";
 
 const cx = classNames.bind(styles);
 
@@ -17,14 +18,7 @@ const mainPage = async () => {
   return (
     <section className={cx("wrap-page")}>
       <ArticleWrap>
-        <h2 className={cx("info")}>
-          <span className={cx("info-part", "info-part-1")}>
-            Frontend Engineer,
-          </span>
-          <span className={cx("info-part", "info-part-2")}>
-            Jang Seo-Ryeong.
-          </span>
-        </h2>
+        <Introduce />
       </ArticleWrap>
       {latestPost && (
         <section className={cx("latest-post-section")}>

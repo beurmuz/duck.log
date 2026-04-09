@@ -18,7 +18,7 @@
 }
 
 .post-category {
-  font-size: 1rem;
+  font-size: 0.8rem;
   color: var(--category-text, #fff);
   background-color: var(--category-bg, #000);
   border-radius: 1rem;
@@ -28,7 +28,7 @@
 }
 
 .post-title {
-  font-size: 2rem;
+  font-size: 1.7rem;
   font-weight: 700;
   padding: 0.8rem 0 0.5rem 0;
 }
