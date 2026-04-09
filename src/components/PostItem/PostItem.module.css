@@ -1,28 +1,27 @@
 .wrap-postitem {
   background-color: #fff;
-  padding: 1.5rem;
-  border-radius: 1.2rem;
+  padding: 1.3rem;
+  border-radius: 1rem;
   border: 1px solid #eee;
   width: 100%;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s cubic-bezier(0.3, 0, 0.2, 1);
   display: flex;
   flex-direction: column;
   height: 100%;
 }
 
 .wrap-postitem:hover {
-  transform: translateY(-8px);
+  transform: translateY(-5px);
   border-color: #000;
   box-shadow: 0 15px 30px rgba(0, 0, 0, 0.05);
   cursor: pointer;
 }
 
 .post-title {
-  font-size: 1.2rem;
-  /* Reduced from 1.4rem */
-  font-weight: 700;
-  line-height: 1.4;
-  margin-bottom: 1rem;
+  font-size: 1.1rem;
+  font-weight: 500;
+  line-height: 1.2;
+  margin-bottom: 0.7rem;
   flex: 1;
   word-break: keep-all;
 }
@@ -35,7 +34,7 @@
 }
 
 .post-date {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   color: #999;
 }
 
@@ -51,7 +50,7 @@
   color: var(--category-text, #fff);
   background-color: var(--category-bg, #000);
   border-radius: 2rem;
-  padding: 0.3rem 0.8rem;
+  padding: 0.3rem 0.7rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;

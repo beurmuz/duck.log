@@ -11,6 +11,7 @@
     background-color: white;
     border-radius: 12px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    width: 100%;
 }
 
 .title {
@@ -41,12 +42,8 @@
 
 /* 모바일 대응 */
 @media (max-width: 768px) {
-    .container {
-        min-height: 60vh;
-    }
-
     .buttonWrapper {
-        width: 90%;
+        width: 100%;
         padding: 2rem 1rem;
     }
 }

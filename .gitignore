@@ -39,3 +39,5 @@ yarn-error.log*
 next-env.d.ts
 
 interview-question.md
+nextjs.md
+zustand_vs_react_query.md

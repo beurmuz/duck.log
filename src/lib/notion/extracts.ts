@@ -67,12 +67,13 @@ export async function fetchNotionPostList(options?: {
 }): Promise<NotionPostList[]> {
   const { pageSize = 50 } = options ?? {};
 
+  // DB에서 포스트 목록 가져오기
   const response = (await notion.dataSources.query({
     data_source_id: DATA_SOURCE_ID as string,
     page_size: pageSize,
   })) as NotionQueryResponse;
 
-  // Notion API 응답 데이터를 PostList 도메인 모델로 변환
+  // Notion API 응답 데이터 -> PostList 도메인 모델로 변환
   const rowDataArray = response.results.map((post) => {
     const properties = post.properties ?? {};
 

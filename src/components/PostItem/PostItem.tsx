@@ -24,6 +24,7 @@ export default function PostItem({
       </h2>
 
       <div className={cx("wrap-post-info")}>
+        <span className={cx("post-date")}>{postDate}</span>
         <ul className={cx("wrap-categories")}>
           {postCategories.map((category, id) => {
             const colors = CATEGORY_COLOR_MAP[category.toLowerCase()] || {
@@ -46,7 +47,7 @@ export default function PostItem({
             );
           })}
         </ul>
-        <span className={cx("post-date")}>{postDate}</span>
+
       </div>
     </article>
   );

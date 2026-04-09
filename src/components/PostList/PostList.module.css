@@ -5,12 +5,12 @@
 .postlist {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 2rem;
+  gap: 1rem;
 }
 
 @media (max-width: 768px) {
   .postlist {
     grid-template-columns: 1fr;
-    gap: 1.5rem;
+    gap: 1rem;
   }
 }
