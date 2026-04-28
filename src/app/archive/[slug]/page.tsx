@@ -1,5 +1,4 @@
 import { notFound } from "next/navigation";
-// import BackToLink from "@/components/UI/BackToLink";
 import { fetchNotionPostDetail } from "@/lib/notion/postDetail";
 import { fetchNotionPostList } from "@/lib/notion/extracts";
 import type { NotionPostList } from "@/models/post";
