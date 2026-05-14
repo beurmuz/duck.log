@@ -11,7 +11,7 @@ export interface RichText {
   };
 }
 
-// BaseBlock - 모든 block의 공통 속성 정의
+// BaseBlock - 모든 block의 공통 속성 정의!
 export interface BaseBlock {
   id: string;
   hasChildren: boolean;
