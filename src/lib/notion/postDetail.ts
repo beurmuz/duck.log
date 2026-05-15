@@ -55,7 +55,7 @@ async function fetchBlockChildrens(
       const response = (await notion.blocks.children.list({
         block_id: blockId,
         start_cursor: cursor,
-        page_size: 50,
+        page_size: 100, // 50에서 100으로 상향하여 요청 횟수 최적화
       })) as BlocksListResponse;
 
       // 타입이 있는 블록만 추가 (완전한 블록만)
@@ -76,27 +76,29 @@ async function fetchBlockChildrens(
   return blocks;
 }
 
-// Page의 모든 Block을 가져오는 함수
+// Page의 모든 Block을 가져오는 함수 (병렬 재귀 방식으로 최적화)
 async function fetchAllBlocks(pageId: string): Promise<BlockObjectResponse[]> {
-  const allBlocks: BlockObjectResponse[] = [];
-  const queue: string[] = [pageId];
-  let front = 0; // 큐의 앞 인덱스 (shift() 대신 인덱스로 O(1) 접근)
+  const children = await fetchBlockChildrens(pageId);
 
-  while (front < queue.length) {
-    const currentBlockId = queue[front++]; // 인덱스로 접근하여 O(1)
-    const children = await fetchBlockChildrens(currentBlockId); // 가져오기
-    allBlocks.push(...children); // 저장하기
+  // 각 블록들 중 하위 자식이 있는 것들을 병렬로 재귀 호출하여 가져옵니다.
+  const childResults = await Promise.all(
+    children.map(async (block) => {
+      if (block.has_children) {
+        const subChildren = await fetchAllBlocks(block.id);
+        return [block, ...subChildren];
+      }
+      return [block];
+    })
+  );
 
-    for (const block of children) {
-      // 탐색하기
-      if (block.has_children) queue.push(block.id);
-    }
-  }
-  return allBlocks;
+  // 중첩된 배열을 하나로 합쳐서 반환합니다.
+  return childResults.flat();
 }
 
-// Main function: slug로 NotionPost 상세 정보 가져오기
-export async function fetchNotionPostDetail(slug: string): Promise<NotionPost> {
+import { unstable_cache } from "next/cache";
+
+// 기존 함수를 내부 구현용으로 이름을 변경합니다.
+async function getNotionPostDetailRaw(slug: string): Promise<NotionPost> {
   const pageId = await getPageIdBySlug(slug);
   if (!pageId)
     throw new Error(`해당 slug의 페이지를 찾을 수 없습니다: ${slug}`);
@@ -122,3 +124,10 @@ export async function fetchNotionPostDetail(slug: string): Promise<NotionPost> {
     blocks: transformedBlocks,
   };
 }
+
+// Next.js의 unstable_cache를 사용하여 Notion API 결과를 캐싱합니다.
+export const fetchNotionPostDetail = unstable_cache(
+  async (slug: string) => getNotionPostDetailRaw(slug),
+  ["notion-post-detail"], // 캐시 키
+  { revalidate: 604800, tags: ["posts"] } // 7일 캐싱 및 태그 설정
+);
