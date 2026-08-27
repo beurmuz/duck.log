@@ -82,6 +82,13 @@ export default async function ArchiveDetailPage({
     );
   } catch (error) {
     console.error(error);
-    notFound();
+    
+    // 포스트를 찾지 못한 경우에만 404 페이지로 이동
+    if (error instanceof Error && error.message.includes("페이지를 찾을 수 없습니다")) {
+      notFound();
+    }
+    
+    // 그 외 외부 API 에러나 네트워크 에러 등은 상위 Error Boundary(error.tsx)로 전파
+    throw error;
   }
 }
